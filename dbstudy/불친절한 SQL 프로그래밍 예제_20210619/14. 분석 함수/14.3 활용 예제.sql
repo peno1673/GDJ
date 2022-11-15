@@ -1,0 +1,135 @@
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (cd VARCHAR2(1), dt DATE, vl NUMBER);
+
+INSERT INTO t1 VALUES ('A', DATE '2050-01-01', 1);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-06', 2);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-16', 1);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-31', 3);
+COMMIT;
+
+--
+SELECT   cd, dt AS bg_dt, LEAD (dt - 1, 1, DATE '9999-12-31') OVER (ORDER BY dt) AS ed_dt, vl
+    FROM t1
+ORDER BY 1, 2;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (cd VARCHAR2(1), ym VARCHAR2(6), vl NUMBER);
+
+INSERT INTO t1 VALUES ('A', '205001', 1);
+INSERT INTO t1 VALUES ('A', '205002', 1);
+INSERT INTO t1 VALUES ('A', '205003', 2);
+INSERT INTO t1 VALUES ('A', '205004', 2);
+INSERT INTO t1 VALUES ('A', '205005', 2);
+INSERT INTO t1 VALUES ('A', '205006', 1);
+INSERT INTO t1 VALUES ('A', '205007', 1);
+INSERT INTO t1 VALUES ('A', '205008', 1);
+INSERT INTO t1 VALUES ('A', '205009', 1);
+INSERT INTO t1 VALUES ('A', '205010', 3);
+INSERT INTO t1 VALUES ('A', '205011', 3);
+INSERT INTO t1 VALUES ('A', '205012', 3);
+COMMIT;
+
+--
+SELECT   cd, MIN (ym) AS bg_ym
+       , CASE WHEN MAX (r1) = MAX (cn) THEN '999912' ELSE MAX (ym) END AS ed_ym, vl
+    FROM (SELECT a.*
+               , COUNT (*) OVER (PARTITION BY a.cd) AS cn
+               , ROW_NUMBER () OVER (PARTITION BY a.cd       ORDER BY a.ym) AS r1
+               , ROW_NUMBER () OVER (PARTITION BY a.cd, a.vl ORDER BY a.ym) AS r2
+            FROM t1 a)
+GROUP BY cd, vl, r1 - r2
+ORDER BY 1, 2;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (cd VARCHAR2(1), bg NUMBER, ed NUMBER, yn VARCHAR2(1));
+
+INSERT INTO t1 VALUES ('A', 1, 2, 'Y');
+INSERT INTO t1 VALUES ('A', 2, 3, 'N');
+INSERT INTO t1 VALUES ('A', 3, 4, 'N');
+INSERT INTO t1 VALUES ('A', 4, 5, 'Y');
+INSERT INTO t1 VALUES ('A', 5, 6, 'Y');
+INSERT INTO t1 VALUES ('A', 6, 7, 'N');
+INSERT INTO t1 VALUES ('A', 7, 8, 'N');
+INSERT INTO t1 VALUES ('A', 8, 9, 'Y');
+COMMIT;
+
+--
+SELECT   cd, MIN (bg) AS bg, MAX (ed) AS ed, yn
+    FROM (SELECT a.*
+               , ROW_NUMBER () OVER (PARTITION BY cd     ORDER BY bg) AS r1
+               , ROW_NUMBER () OVER (PARTITION BY cd, yn ORDER BY bg) AS r2
+            FROM t1 a)
+GROUP BY cd, yn, CASE WHEN yn = 'N' THEN r1 - r2 ELSE r1 END
+ORDER BY 1, 2;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (cd VARCHAR2(1), dt DATE, vl NUMBER);
+
+INSERT INTO t1 VALUES ('A', DATE '2050-01-01', 100);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-02', 200);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-03', 300);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-04', 400);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-05', 500);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-06', 400);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-07', 500);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-08', 600);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-09', 700);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-10', 500);
+COMMIT;
+
+--
+WITH w1 AS (
+SELECT a.*, NVL (SIGN (vl - LAG (vl) OVER (PARTITION BY cd ORDER BY dt)), 0) AS df
+  FROM t1 a)
+SELECT   a.*
+       , ROW_NUMBER () OVER (PARTITION BY cd     ORDER BY dt) AS r1
+       , ROW_NUMBER () OVER (PARTITION BY cd, df ORDER BY dt) AS r2
+    FROM w1 a
+ORDER BY 1, 2;
+
+--
+WITH w1 AS (
+SELECT a.*, NVL (SIGN (vl - LAG (vl) OVER (PARTITION BY cd ORDER BY dt)), 0) AS df
+  FROM t1 a)
+SELECT a.*
+  FROM (SELECT a.*, COUNT (*) OVER (PARTITION BY cd, rn) AS cn
+          FROM (SELECT a.*
+                     , ROW_NUMBER () OVER (PARTITION BY cd     ORDER BY dt)
+                     - ROW_NUMBER () OVER (PARTITION BY cd, df ORDER BY dt) AS rn
+                  FROM w1 a) a
+         WHERE df = 1) a
+ WHERE cn >= 3;
+
+--
+SELECT cd, dt, vl, cn
+  FROM t1
+MATCH_RECOGNIZE (
+    PARTITION BY cd ORDER BY dt
+    MEASURES FINAL COUNT (*) AS cn
+    ALL ROWS PER MATCH
+    PATTERN (up{3,})
+    DEFINE up AS up.vl > PREV (up.vl))
+ORDER BY cd, dt;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (cd VARCHAR2(1), dt DATE, vl NUMBER);
+
+INSERT INTO t1 VALUES ('A', DATE '2050-01-01', 100);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-04', 400);
+INSERT INTO t1 VALUES ('A', DATE '2050-01-08', 800);
+COMMIT;
+
+--
+SELECT   a.dt + b.lv - 1 AS dt, ROUND (a.vl + (a.vl_df / a.dn) * (b.lv - 1), 2) AS vl
+    FROM (SELECT a.*
+               , NVL (LEAD (a.vl) OVER (ORDER BY a.dt) - a.vl, 0) AS vl_df
+               , NVL (LEAD (a.dt) OVER (ORDER BY a.dt) - a.dt, 1) AS dn
+            FROM t1 a) a
+       , (SELECT LEVEL AS lv FROM DUAL CONNECT BY LEVEL <= 10) b
+   WHERE b.lv <= a.dn
+ORDER BY 1;

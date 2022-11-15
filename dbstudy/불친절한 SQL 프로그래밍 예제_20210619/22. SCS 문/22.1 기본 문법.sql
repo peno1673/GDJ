@@ -1,0 +1,87 @@
+--
+SELECT name, value FROM v$parameter WHERE isses_modifiable = 'TRUE' ORDER BY num;
+
+--
+SELECT parameter, value FROM v$nls_parameters;
+
+--
+SELECT parameter, COUNT (*) AS cnt FROM v$nls_valid_values GROUP BY parameter;
+
+--
+ALTER SESSION SET NLS_LANGUAGE = ENGLISH;
+
+--
+SELECT parameter, value
+  FROM v$nls_parameters
+ WHERE parameter IN ('NLS_LANGUAGE', 'NLS_DATE_LANGUAGE');
+
+--
+WITH w1 AS (SELECT DATE '2050-01-01' AS c1 FROM DUAL)
+SELECT TO_CHAR (c1, 'MONTH') AS c1, TO_CHAR (c1, 'MON') AS c2
+     , TO_CHAR (c1, 'DAY')   AS c3, TO_CHAR (c1, 'DY')  AS c4
+     , TO_CHAR (c1, 'D')     AS c5
+  FROM w1;
+
+--
+ALTER SESSION SET NLS_TERRITORY = AMERICA;
+
+--
+SELECT parameter, value
+  FROM v$nls_parameters
+ WHERE parameter IN (
+          'NLS_TERRITORY'
+        , 'NLS_CURRENCY', 'NLS_DUAL_CURRENCY', 'NLS_ISO_CURRENCY'
+        , 'NLS_DATE_FORMAT', 'NLS_TIMESTAMP_FORMAT', 'NLS_TIMESTAMP_TZ_FORMAT');
+
+--
+SELECT TO_CHAR (1, '9$') AS c1, TO_CHAR (1, '9L') AS c2
+     , TO_CHAR (1, '9U') AS c3, TO_CHAR (1, '9C') AS c4
+  FROM DUAL;
+
+--
+SELECT DATE '2050-01-01'                      AS c1
+     , TIMESTAMP '2050-01-01 00:00:00'        AS c2
+     , TIMESTAMP '2050-01-01 00:00:00 +09:00' AS c3
+  FROM DUAL;
+
+--
+SELECT ename FROM emp WHERE hiredate = '19870419';
+
+--
+ALTER SESSION SET NLS_DATE_FORMAT = "YYYY-MM-DD HH24:MI:SS";
+
+--
+SELECT ename FROM emp WHERE hiredate = '19870419';
+
+--
+SELECT ename FROM emp WHERE hiredate = TO_DATE ('19870419', 'YYYYMMDD');
+
+--
+DROP TABLE t1 PURGE;
+DROP TABLE u1.t1 PURGE;
+
+CREATE TABLE t1 AS SELECT 1 AS c1 FROM DUAL;
+CREATE TABLE u1.t1 AS SELECT 2 AS c1 FROM DUAL;
+
+--
+SELECT * FROM t1;
+
+--
+ALTER SESSION SET CURRENT_SCHEMA = u1;
+
+--
+SELECT * FROM t1;
+
+--
+SELECT SYS_CONTEXT ('USERENV', 'SESSION_USER'  ) AS c1
+     , SYS_CONTEXT ('USERENV', 'CURRENT_SCHEMA') AS c2
+  FROM DUAL;
+
+--
+SELECT SESSIONTIMEZONE AS c1, SYSDATE AS c2, CURRENT_DATE AS c2 FROM DUAL;
+
+--
+ALTER SESSION SET TIME_ZONE = '+08:00';
+
+--
+SELECT SESSIONTIMEZONE AS c1, SYSDATE AS c2, CURRENT_DATE AS c2 FROM DUAL;

@@ -1,0 +1,96 @@
+--
+DROP TABLE doc PURGE;
+CREATE TABLE doc (id NUMBER, content VARCHAR2(4000));
+
+INSERT INTO doc VALUES (1, 'ZYX ABC');
+INSERT INTO doc VALUES (2, 'ZYX ABC ABC');
+INSERT INTO doc VALUES (3, 'ZYX DEF');
+COMMIT;
+
+--
+CREATE INDEX doc_x1 ON doc (content) INDEXTYPE IS CTXSYS.CONTEXT;
+
+--
+SELECT   a.*, SCORE (1) AS sc
+    FROM doc a
+   WHERE CONTAINS (a.content, 'ABC', 1) > 0
+ORDER BY SCORE (1);
+
+--
+SELECT   a.*, SCORE (1) AS sc
+    FROM doc a
+   WHERE CONTAINS (a.content, 'ABC|DEF', 1) > 0
+ORDER BY SCORE (1);
+
+--
+EXEC CTX_DDL.SYNC_INDEX ('doc_x1')
+
+--
+DROP TABLE doc PURGE;
+CREATE TABLE doc (id NUMBER, content VARCHAR2(4000), price NUMBER);
+
+INSERT INTO doc VALUES (1, 'ZYX ABC'    , 10);
+INSERT INTO doc VALUES (2, 'ZYX ABC ABC', 20);
+INSERT INTO doc VALUES (3, 'ZYX DEF'    , 30);
+COMMIT;
+
+--
+EXEC CTX_DDL.DROP_INDEX_SET ('DOC_IS')
+EXEC CTX_DDL.CREATE_INDEX_SET ('DOC_IS')
+EXEC CTX_DDL.ADD_INDEX ('DOC_IS', 'PRICE')
+
+--
+CREATE INDEX doc_x1 ON doc (content) INDEXTYPE IS CTXSYS.CTXCAT PARAMETERS ('INDEX SET DOC_IS');
+
+--
+SELECT * FROM doc WHERE CATSEARCH (content, 'ABC', 'price BETWEEN 10 AND 15') > 0;
+
+--
+SELECT * FROM doc WHERE CATSEARCH (content, 'ABC', 'price BETWEEN 10 AND 30') > 0;
+
+--
+DROP TABLE cat PURGE;
+DROP TABLE doc PURGE;
+DROP TABLE doc_cat PURGE;
+
+CREATE TABLE cat (id NUMBER, name VARCHAR2(100), query VARCHAR2(4000));
+CREATE TABLE doc (id NUMBER, name VARCHAR2(100), content VARCHAR2(4000));
+CREATE TABLE doc_cat (doc_id NUMBER, cat_id NUMBER);
+
+--
+INSERT INTO cat VALUES (1, 'ABC', 'ABOUT (ABC)');
+INSERT INTO cat VALUES (2, 'DEF', 'ABOUT (DEF)');
+COMMIT;
+
+--
+CREATE INDEX cat_x1 ON cat (query) INDEXTYPE IS CTXSYS.CTXRULE;
+
+--
+CREATE OR REPLACE TRIGGER trg_doc
+    BEFORE INSERT ON doc FOR EACH ROW
+BEGIN
+    FOR c1 IN (SELECT id FROM cat WHERE MATCHES (query, :NEW.content) > 0) LOOP
+        BEGIN
+            INSERT INTO doc_cat (doc_id, cat_id) VALUES (:NEW.id, c1.id);
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+    END LOOP;
+END;
+/
+
+--
+INSERT INTO doc VALUES (1, 'ABC 1', 'ZYX ABC');
+INSERT INTO doc VALUES (2, 'ABC 2', 'ZYX ABC ABC');
+INSERT INTO doc VALUES (3, 'DEF 1', 'ZYX DEF');
+COMMIT;
+
+--
+SELECT * FROM doc_cat;
+
+--
+SELECT c.*
+  FROM cat a, doc_cat b, doc c
+ WHERE a.name = 'ABC'
+   AND b.cat_id = a.id
+   AND c.id = b.doc_id;

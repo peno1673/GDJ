@@ -1,0 +1,411 @@
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER CONSTRAINT t1_n1 NOT NULL);
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER, CONSTRAINT t1_c1 CHECK (c1 > c2));
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER);
+
+
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c1);
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER NOT NULL, c2 NUMBER);
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c1);
+
+--
+ALTER TABLE t1 RENAME CONSTRAINT t1_pk TO t1_u1;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER CONSTRAINT t1_n1 NOT NULL, c2 NUMBER, c3 NUMBER);
+
+--
+INSERT INTO t1 (c1) VALUES (NULL);
+
+--
+ALTER TABLE t1 MODIFY (c2 NOT NULL, c3 DEFAULT 0 NOT NULL);
+
+--
+INSERT INTO t1 (c1, c2) VALUES (1, 1);
+
+--
+ALTER TABLE t1 MODIFY c3 NULL;
+
+--
+SELECT column_name, nullable FROM user_tab_columns WHERE table_name = 'T1';
+
+--
+SELECT   constraint_name, constraint_type, search_condition_vc, generated
+    FROM user_constraints
+   WHERE table_name = 'T1'
+ORDER BY search_condition_vc;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER, CONSTRAINT t1_u1 UNIQUE (c1, c2));
+
+--
+INSERT INTO t1 VALUES (NULL, NULL);
+INSERT INTO t1 VALUES (NULL, NULL);
+INSERT INTO t1 VALUES (1, NULL);
+INSERT INTO t1 VALUES (1, NULL);
+
+--
+SELECT   constraint_name, constraint_type, index_owner, index_name
+    FROM user_constraints
+   WHERE table_name = 'T1'
+ORDER BY constraint_name;
+
+--
+SELECT   constraint_name, column_name, position
+    FROM user_cons_columns
+   WHERE table_name = 'T1'
+ORDER BY constraint_name, position;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER);
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c1);
+
+--
+INSERT INTO t1 VALUES (1, 1);
+
+INSERT INTO t1 VALUES (1, 2);
+
+INSERT INTO t1 VALUES (NULL, 3);
+
+--
+SELECT constraint_name, constraint_type, index_owner, index_name
+  FROM user_constraints
+ WHERE table_name = 'T1';
+
+--
+SELECT column_name, nullable FROM user_tab_columns WHERE table_name = 'T1';
+
+--
+ALTER TABLE t1 DROP CONSTRAINT t1_pk;
+
+--
+SELECT column_name, nullable FROM user_tab_columns WHERE table_name = 'T1';
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER NOT NULL, c2 NUMBER, CONSTRAINT t1_pk PRIMARY KEY (c1));
+
+--
+SELECT constraint_name, constraint_type FROM user_constraints WHERE table_name = 'T1'
+
+--
+ALTER TABLE t1 DROP CONSTRAINT t1_pk;
+
+--
+SELECT column_name, nullable FROM user_tab_columns WHERE table_name = 'T1';
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER NOT NULL, c2 NUMBER, c3 VARCHAR2(4000));
+
+INSERT INTO t1
+SELECT ROWNUM AS c1, ROWNUM AS c2, LPAD ('X', 4000, 'X') AS c3
+  FROM XMLTABLE ('1 to 100000');
+
+COMMIT;
+
+CREATE UNIQUE INDEX t1_u1 ON t1 (c1);
+CREATE UNIQUE INDEX t1_u2 ON t1 (c2);
+
+--
+SET TIMING ON
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c1);
+
+--
+ALTER TABLE t1 DROP CONSTRAINT t1_pk;
+
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c2);
+
+--
+SELECT a.owner, a.table_name, a.column_name
+  FROM dba_tab_columns a
+ WHERE a.nullable = 'N'
+   AND NOT EXISTS (SELECT 'X'
+                     FROM dba_constraints x
+                    WHERE x.owner = a.owner
+                      AND x.table_name = a.table_name
+                      AND x.search_condition_vc = '"' || a.column_name ||  '" IS NOT NULL');
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER);
+
+INSERT INTO t1 VALUES (1, 1);
+INSERT INTO t1 VALUES (2, 2);
+INSERT INTO t1 VALUES (2, 3);
+INSERT INTO t1 VALUES (3, 4);
+INSERT INTO t1 VALUES (3, 5);
+INSERT INTO t1 VALUES (3, 6);
+COMMIT;
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c1);
+
+--
+DELETE
+  FROM t1
+ WHERE ROWID IN (SELECT rid
+                   FROM (SELECT ROWID AS rid
+                              , ROW_NUMBER () OVER (PARTITION BY c1 ORDER BY c2) AS rn
+                           FROM t1)
+                  WHERE rn > 1);
+
+--
+SELECT * FROM t1;
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_pk PRIMARY KEY (c1);
+
+--
+DROP TABLE t1 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t2 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t3 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t4 CASCADE CONSTRAINTS PURGE;
+
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER, CONSTRAINT t1_pk PRIMARY KEY (c1));
+CREATE TABLE t2 (c1 NUMBER);
+CREATE TABLE t3 (c1 NUMBER);
+CREATE TABLE t4 (c1 NUMBER);
+
+--
+ALTER TABLE t2 ADD CONSTRAINT t2_f1 FOREIGN KEY (c1) REFERENCES t1 (c2);
+
+--
+ALTER TABLE t2 ADD CONSTRAINT t2_f1 FOREIGN KEY (c1) REFERENCES t1 (c1);
+ALTER TABLE t3 ADD CONSTRAINT t3_f1 FOREIGN KEY (c1) REFERENCES t1 (c1) ON DELETE CASCADE;
+ALTER TABLE t4 ADD CONSTRAINT t4_f1 FOREIGN KEY (c1) REFERENCES t1 (c1) ON DELETE SET NULL;
+
+--
+INSERT INTO t2 VALUES (1);
+
+--
+INSERT INTO t1 VALUES (1, 1);
+
+--
+INSERT INTO t2 VALUES (1);
+
+--
+UPDATE t1 SET c1= 2 WHERE c1 = 1;
+
+--
+DELETE FROM t1 WHERE c1 = 1;
+
+--
+INSERT INTO t1 VALUES (2, 2);
+INSERT INTO t3 VALUES (2);
+INSERT INTO t4 VALUES (2);
+
+--
+DELETE FROM t1 WHERE c1 = 2;
+
+--
+SELECT * FROM t3;
+
+SELECT * FROM t4;
+
+--
+SELECT   constraint_name, constraint_type, r_owner, r_constraint_name, delete_rule
+    FROM user_constraints
+   WHERE table_name IN ('T2', 'T3', 'T4')
+ORDER BY constraint_name;
+
+--
+ALTER TABLE t1 DROP COLUMN c1;
+
+--
+ALTER TABLE t1 DROP COLUMN c1 CASCADE CONSTRAINTS;
+
+--
+DROP TABLE t1 PURGE;
+
+--
+DROP TABLE t1 CASCADE CONSTRAINTS PURGE;
+
+--
+DROP TABLE t1 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t2 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t3 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t4 CASCADE CONSTRAINTS PURGE;
+
+--
+DROP TABLE t1 CASCADE CONSTRAINTS PURGE;
+DROP TABLE t2 CASCADE CONSTRAINTS PURGE;
+
+CREATE TABLE t1 (c1 NUMBER, CONSTRAINT t1_pk PRIMARY KEY (c1));
+
+CREATE TABLE t2 (
+    c1 NUMBER, c2 NUMBER
+  , CONSTRAINT t2_pk PRIMARY KEY (c1)
+  , CONSTRAINT t2_f1 FOREIGN KEY (c2) REFERENCES t1 (c1)
+);
+
+INSERT INTO t1 VALUES (1);
+INSERT INTO t1 VALUES (2);
+INSERT INTO t1 VALUES (3);
+INSERT INTO t2 VALUES (1, 1);
+COMMIT;
+
+-- S1
+UPDATE t2 SET c2 = 2 WHERE c1 = 1;
+
+-- S2
+UPDATE t1 SET c1 = 4 WHERE c1 = 3;
+
+-- S1
+ROLLBACK;
+
+-- S2
+ROLLBACK;
+
+--
+CREATE INDEX t2_x1 ON t2 (c2);
+
+-- S1
+UPDATE t2 SET c2 = 2 WHERE c1 = 1;
+
+-- S2
+UPDATE t1 SET c1 = 4 WHERE c1 = 3;
+
+-- S1
+ROLLBACK;
+
+-- S2
+ROLLBACK;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER, CONSTRAINT t1_c1 CHECK (c1 < c2));
+
+--
+INSERT INTO t1 VALUES (1, 2);
+INSERT INTO t1 VALUES (2, NULL);
+INSERT INTO t1 VALUES (3, 2);
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 VARCHAR2(8));
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_c1 CHECK (c1 = TO_CHAR (TO_DATE (c1, 'YYYYMMDD'), 'YYYYMMDD'));
+
+--
+ALTER TABLE t1 ADD CONSTRAINT t1_c1 CHECK (VALIDATE_CONVERSION (c1 AS DATE, 'YYYYMMDD') = 1);
+
+--
+INSERT INTO t1 VALUES ('20500131');
+INSERT INTO t1 VALUES ('20500132');
+
+--
+SELECT constraint_name, constraint_type, search_condition_vc
+  FROM user_constraints
+ WHERE table_name = 'T1';
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER CONSTRAINT t1_n1 NOT NULL);
+
+--
+SELECT deferrable, deferred FROM user_constraints WHERE table_name = 'T1';
+
+--
+ALTER TABLE t1 DROP CONSTRAINT t1_n1;
+ALTER TABLE t1 MODIFY c1 CONSTRAINT t1_n1 NOT NULL DEFERRABLE;
+
+--
+SELECT deferrable, deferred FROM user_constraints WHERE table_name = 'T1';
+
+--
+INSERT INTO t1 VALUES (NULL);
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 INITIALLY DEFERRED;
+
+--
+INSERT INTO t1 VALUES (NULL);
+
+COMMIT;
+
+--
+INSERT INTO t1 VALUES (NULL);
+
+UPDATE t1 SET c1 = 1 WHERE c1 IS NULL;
+
+COMMIT;
+
+--
+SET CONSTRAINT ALL IMMEDIATE;
+
+INSERT INTO t1 VALUES (NULL);
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 INITIALLY IMMEDIATE;
+
+--
+SET CONSTRAINT ALL DEFERRED;
+
+INSERT INTO t1 VALUES (NULL);
+
+COMMIT;
+
+--
+DROP TABLE t1 PURGE;
+CREATE TABLE t1 (c1 NUMBER, c2 NUMBER CONSTRAINT t1_n1 NOT NULL);
+
+--
+SELECT status, validated FROM user_constraints WHERE table_name = 'T1';
+
+--
+INSERT INTO t1 VALUES (1, 1);
+INSERT INTO t1 VALUES (2, NULL);
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 DISABLE;
+
+--
+SELECT status, validated FROM user_constraints WHERE table_name = 'T1';
+
+--
+INSERT INTO t1 VALUES (2, NULL);
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 ENABLE;
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 ENABLE NOVALIDATE;
+
+--
+SELECT * FROM t1;
+
+--
+INSERT INTO t1 VALUES (3, NULL);
+
+--
+DELETE FROM t1 WHERE c2 IS NULL;
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 ENABLE;
+
+--
+ALTER TABLE t1 MODIFY CONSTRAINT t1_n1 DISABLE VALIDATE;
+
+--
+INSERT INTO t1 VALUES (4, 4);

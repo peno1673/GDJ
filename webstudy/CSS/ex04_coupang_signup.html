@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .member-wrapper {
+            margin: 0 auto;
+            min-width: 290px;
+            max-width: 460px;
+            padding: 0 4.35%;
+        }
+        .member-header {
+            width: 100%;
+            position: relative;
+        }
+        .member-logo {
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 10.27%;
+        }
+        .member-logo-link {
+            display: block;
+            width: 43.83%;
+            max-width: 195px;
+            max-height: 46px;
+            padding-top: 10%;
+            margin: 0 auto;
+            background-image: url(https://static.coupangcdn.com/image/static/login/logo-coupang.x2.20201201.png);
+            background-size: cover;
+        }
+        .member-main {
+            width: 100%;
+        }
+        .member-join {
+            width: 100%;
+        }
+        .section-title {
+            padding: 20px 0 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.29;
+            color: #111;
+        }
+        .join-content {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .section-body {
+            width: 100%;
+        }
+        .member-field-wrap {
+            width: 100%;
+            margin-top: 2.9%;
+        }
+        .member-input-field {
+            width: 100%;
+        }
+        .member-input-wrap {
+            display: block;
+            height: 48px;
+            padding: 0;
+            border: 1px solid #CCC;
+            background-color: #FFF;
+        }
+        .member-input-group-icon-label {
+            position: relative;
+            float: left;
+            min-width: 44px;
+            height: 100%;
+            border-right: 1px solid #CCC;
+            background-color: #FAFAFA;
+        }
+        .join-sprite {
+            background-image: url("//img1a.coupangcdn.com/image/static/login/sprite-join.20160902.svg");
+            background-repeat: no-repeat;
+            background-size: 86px 86px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 20px;  /* 잘리는 아이콘이 있어 높게 조정하였음 */
+            width: 1px;
+            margin: -8px 0 0 -10px;
+            padding-left: 19px;
+        }
+        .join-sprite-email {
+            background-position: -1px -1px;
+        }
+        .join-sprite-password {
+            background-position: -22px -1px;
+        }
+        .join-sprite-password-confirm {
+            background-position: -43px -1px;
+        }
+        .join-sprite-name {
+            background-position: -1px -22px;
+        }
+        .join-sprite-phone {
+            background-position: -22px -22px;
+        }
+        .member-input-group {
+            display: block;
+            margin: 0;
+        }
+        .member-input {
+            box-sizing: border-box;
+            width: 80%;
+            height: 48px;
+            margin: 0;
+            padding: 16px 0 12px;
+            font-size: 14px;
+            line-height: 20px;
+            text-indent: 12px;
+            border: none;
+            outline: none;
+        }
+        /* 여기서부터 추가된 내용 */
+        label {
+            font-size: 14px;
+        }
+        .jointerms {
+            width: 100%;
+        }
+        .g-terms-checkbox {
+            border-top: 1px solid #f1f4f6;
+            color: #111;
+        }
+        .g-terms-checkbox * {
+            box-sizing: border-box;
+        }
+        .g-terms-checkbox > .checkall {
+            margin-bottom: 8px;
+        }
+        .g-terms-checkbox > .checkall-first {
+            padding-top: 20px;
+        }
+        .g-terms-checkbox > .checkall .c-checkbox-item label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .c-checkbox-item {
+            width: 100%;
+            display: flex;
+        }
+        .c-checkbox-item > .wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            flex: 1 0 auto;
+        }
+        .c-checkbox-item > .wrapper > input {
+            display: none;
+        }
+        .c-checkbox-item > .wrapper > label {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex: 1 auto;
+            margin-right: 25px;
+        }
+        .c-checkbox-item > .wrapper .icon-chk {
+            min-width: 20px;
+            width: 20px;
+            height: 20px;
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGc+CiAgICAgICAgICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC02NjU5IC04MzYpIHRyYW5zbGF0ZSg2NjU5IDgzNikiPgogICAgICAgICAgICAgICAgPHJlY3Qgd2lkdGg9IjE5IiBoZWlnaHQ9IjE5IiB4PSIuNSIgeT0iLjUiIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSIjOTE5RUFCIiByeD0iNCIvPgogICAgICAgICAgICAgICAgPGc+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZmlsbD0iI0ZGRiIgZmlsbC1vcGFjaXR5PSIwIiBkPSJNMCAxMkwxMiAxMiAxMiAwIDAgMHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiLz4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBmaWxsPSIjRUFFREYwIiBkPSJNMTAuNDU2IDEuMjc2Yy4zNTQtLjM2OC45MjYtLjM2OCAxLjI4LjAwMS4zMjMuMzM5LjM1Ljg3LjA4IDEuMjRsLS4wODEuMDk2LTYuODE0IDcuMTFjLS4zMjUuMzQtLjgzNC4zNjctMS4xODkuMDgzTDMuNjQgOS43Mi4yNjIgNi4xNjZjLS4zNTEtLjM3LS4zNS0uOTcuMDA1LTEuMzM3LjMyNS0uMzM3LjgzNC0uMzYzIDEuMTg3LS4wOGwuMDkyLjA4NSAyLjczOCAyLjg4MiA2LjE3Mi02LjQ0eiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNCA0KSIvPgogICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICAgICAgPHBhdGggZmlsbD0iI0Q4RDhEOCIgZmlsbC1vcGFjaXR5PSIwIiBkPSJNMCAwSDIwVjIwSDB6Ii8+CiAgICAgICAgICAgIDwvZz4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPgo=);
+            margin-right: 8px;
+        }
+        .c-checkbox-item > .wrapper input:checked ~ * .icon-chk {
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGc+CiAgICAgICAgICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC02NzU4IC04MzYpIHRyYW5zbGF0ZSg2NzU4IDgzNikiPgogICAgICAgICAgICAgICAgPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjMzQ2QUZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIHJ4PSI0Ii8+CiAgICAgICAgICAgICAgICA8ZyBmaWxsPSIjRkZGIj4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBmaWxsLW9wYWNpdHk9IjAiIGQ9Ik0wIDEyTDEyIDEyIDEyIDAgMCAweiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNCA0KSIvPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZD0iTTEwLjQ1NiAxLjI3NmMuMzU0LS4zNjguOTI2LS4zNjggMS4yOC4wMDEuMzIzLjMzOS4zNS44Ny4wOCAxLjI0bC0uMDgxLjA5Ni02LjgxNCA3LjExYy0uMzI1LjM0LS44MzQuMzY3LTEuMTg5LjA4M0wzLjY0IDkuNzIuMjYyIDYuMTY2Yy0uMzUxLS4zNy0uMzUtLjk3LjAwNS0xLjMzNy4zMjUtLjMzNy44MzQtLjM2MyAxLjE4Ny0uMDhsLjA5Mi4wODUgMi43MzggMi44ODIgNi4xNzItNi40NHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiLz4KICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgICAgIDxwYXRoIGZpbGw9IiNEOEQ4RDgiIGZpbGwtb3BhY2l0eT0iMCIgZD0iTTAgMEgyMFYyMEgweiIvPgogICAgICAgICAgICA8L2c+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4K);
+        }
+        .g-terms-checkbox .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .g-terms-checkbox .message {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #555;
+            margin: 6px 0 0 26px;
+            display: block;
+        }
+        .g-terms-checkbox > .terms {
+            margin-top: 16px;
+            padding: 18px 16px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        .g-terms-checkbox > .terms > .c-checkbox-item > .wrapper {
+            padding-bottom: 12px;;
+        }
+        .c-checkbox-item .icon-right-arrow {
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGc+CiAgICAgICAgICAgIDxnPgogICAgICAgICAgICAgICAgPHBhdGggZmlsbD0iIzIxMkIzNiIgZmlsbC1ydWxlPSJub256ZXJvIiBkPSJNNS4xODEgMi4yMWMuMjMzLS4yNDguNjEtLjI3OC44NzgtLjA4MmwuMDY1LjA1MyA1LjY2NiA1LjMzNGMuMjYuMjQ0LjI3OC42NDUuMDU2LjkxMWwtLjA1Ni4wNi01LjY2NiA1LjMzM2MtLjI2OS4yNTItLjY5LjI0LS45NDMtLjAyOS0uMjMzLS4yNDctLjI0LS42MjYtLjAyOS0uODgxbC4wNTgtLjA2MUwxMC4zNiA4IDUuMjEgMy4xNTJjLS4yNDgtLjIzMy0uMjc4LS42MS0uMDgyLS44NzhsLjA1My0uMDY0eiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTcxMTUgLTgxNikgdHJhbnNsYXRlKDcxMTUgODE2KSIvPgogICAgICAgICAgICAgICAgPHBhdGggZmlsbD0iI0ZGRiIgZmlsbC1vcGFjaXR5PSIwIiBkPSJNMCAxNkwxNiAxNiAxNiAwIDAgMHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC03MTE1IC04MTYpIHRyYW5zbGF0ZSg3MTE1IDgxNikiLz4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+Cg==);
+            cursor: pointer;
+            float: right;
+            border: none;
+            background-color: #FFF;
+            font-size: 0%;
+            flex-shrink: 0;
+        }
+        .join-footer {
+            position: relative;
+            margin: 6.08% 0 0;
+            text-align: center;
+        }
+        .join-button {
+            width: 100%;
+            background-color: #0074e9;
+            color: #fff;
+            box-shadow: inset 0 -2px 0 rgb(0 0 0 / 38%);
+            padding: 16px 0 16px 0;
+            font-size: 17px;
+            line-height: 20px;
+            display: block;
+            border: none;
+            border-radius: 2px;
+        }
+        .member-footer {
+            padding: 20px 0 40px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="member-wrapper">
+        <header class="member-header">
+            <h1 class="member-logo">
+                <a href="http://www.coupang.com" class="member-logo-link">
+
+                </a>
+            </h1>
+        </header>
+        <div class="member-main">
+            <div class="member-join">
+                <div class="section-title">
+                    회원정보를 입력해주세요
+                </div>
+                <div class="join-content">
+                    <div class="section-body">
+                        <div class="member-field-wrap">
+                            <div class="member-input-field">
+                                <label class="member-input-wrap" for="join-email-input">
+                                    <span class="member-input-group-icon-label">
+                                        <i class="join-sprite join-sprite-email"></i>
+                                    </span>
+                                    <span class="member-input-group">
+                                        <input type="email" id="join-email-input" class="member-input" maxlength="80" placeholder="아이디(이메일)">
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="member-field-wrap">
+                            <div class="member-input-field">
+                                <label class="member-input-wrap" for="join-password-input">
+                                    <span class="member-input-group-icon-label">
+                                        <i class="join-sprite join-sprite-password"></i>
+                                    </span>
+                                    <span class="member-input-group">
+                                        <input type="password" id="join-password-input" class="member-input" maxlength="20" placeholder="비밀번호">
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="member-field-wrap">
+                            <div class="member-input-field">
+                                <label class="member-input-wrap" for="join-password-again-input">
+                                    <span class="member-input-group-icon-label">
+                                        <i class="join-sprite join-sprite-password-confirm"></i>
+                                    </span>
+                                    <span class="member-input-group">
+                                        <input type="password" id="join-password-again-input" class="member-input" maxlength="20" placeholder="비밀번호 확인">
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="member-field-wrap">
+                            <div class="member-input-field">
+                                <label class="member-input-wrap" for="join-name-input">
+                                    <span class="member-input-group-icon-label">
+                                        <i class="join-sprite join-sprite-name"></i>
+                                    </span>
+                                    <span class="member-input-group">
+                                        <input type="text" id="join-name-input" class="member-input" maxlength="40" placeholder="이름">
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="member-field-wrap">
+                            <div class="member-input-field">
+                                <label class="member-input-wrap" for="join-phone-input">
+                                    <span class="member-input-group-icon-label">
+                                        <i class="join-sprite join-sprite-phone"></i>
+                                    </span>
+                                    <span class="member-input-group">
+                                        <input type="text" id="join-phone-input" class="member-input" maxlength="80" placeholder="아이디(이메일)">
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 여기서부터 추가된 내용 -->
+                <div class="jointerms">
+                    <div class="g-terms-checkbox">
+                        <div class="checkall checkall-first">
+                            <div class="c-checkbox-item">
+                                <div class="wrapper">
+                                    <input type="checkbox" id="chk-checkall">
+                                    <label for="chk-checkall">
+                                        <i class="icon icon-chk"></i>
+                                        <span>모두 확인하였으며 동의합니다.</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <span class="message">
+                                동의에는 필수 및 선택 목적(광고성 정보 수신 포함)에 대한 동의가 포함되어 있으며, 선택 목적의 동의를 거부하시는 경우에도 서비스 이용이 가능합니다.
+                            </span>
+                        </div>
+                        <ul class="terms">
+                            <div class="c-checkbox-item">
+                                <div class="wrapper">
+                                    <input type="checkbox" id="chk-join-terms-fourteen">
+                                    <label for="chk-join-terms-fourteen">
+                                        <i class="icon icon-chk"></i>
+                                        <span>[필수] 만 14세 이상입니다</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="c-checkbox-item">
+                                <div class="wrapper">
+                                    <input type="checkbox" id="chk-join-terms-service">
+                                    <label for="chk-join-terms-service">
+                                        <i class="icon icon-chk"></i>
+                                        <span>[필수] 쿠팡 이용약관 동의</span>
+                                    </label>
+                                    <button class="icon icon-right-arrow"> </button>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="join-footer">
+                    <button class="join-button">동의하고 가입하기</button>
+                </div>
+            </div>
+        </div>
+        <footer class="member-footer">
+            <div>©Coupang Corp. All rights reserved.</div>
+        </footer>
+    </div>
+
+</body>
+</html>

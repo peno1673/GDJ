@@ -1,0 +1,3 @@
+--
+SELECT REGEXP_REPLACE (JSON_ARRAYAGG (ename ORDER BY ename RETURNING CLOB), '\[|"|\]') AS c1
+  FROM emp;

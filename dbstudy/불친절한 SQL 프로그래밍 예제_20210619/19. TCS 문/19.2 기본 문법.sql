@@ -1,0 +1,103 @@
+
+--
+DELETE FROM t1 WHERE cd = 3;
+
+COMMIT;
+
+--
+UPDATE t1 SET vl = vl - 10 WHERE cd = 1;
+
+COMMIT;
+
+UPDATE t1 SET vl = vl + 10 WHERE cd = 2;
+
+--
+SELECT * FROM t1;
+
+--
+UPDATE t1 SET vl = 50 WHERE cd = 1;
+COMMIT;
+
+--
+UPDATE t1 SET vl = vl - 10 WHERE cd = 1;
+UPDATE t1 SET vl = vl + 10 WHERE cd = 2;
+
+COMMIT;
+
+--
+SELECT * FROM t1;
+
+--
+DELETE FROM t1;
+
+--
+SELECT * FROM t1;
+
+--
+ROLLBACK;
+
+--
+SELECT * FROM t1;
+
+--
+UPDATE t1 SET vl = vl - 10 WHERE cd = 1;
+UPDATE t1 SET vl = vl + 10 WHERE cd = 2;
+
+--
+SELECT * FROM t1;
+
+--
+UPDATE t1 SET vl = vl - 10 WHERE cd = 2;
+
+SAVEPOINT s1;
+
+UPDATE t1 SET vl = vl + 10 WHERE cd = 1;
+
+SAVEPOINT s2;
+
+DELETE FROM t1;
+
+SELECT * FROM t1;
+
+--
+ROLLBACK TO SAVEPOINT s2;
+
+SELECT * FROM t1;
+
+--
+ROLLBACK TO SAVEPOINT s1;
+
+SELECT * FROM t1;
+
+--
+ROLLBACK TO SAVEPOINT s2;
+
+--
+ROLLBACK;
+
+SELECT * FROM t1;
+
+--
+UPDATE t1 SET vl = vl + 10 WHERE cd = 1;
+
+UPDATE t1 SET vl = 'A' WHERE cd = 1;
+
+--
+SELECT * FROM t1;
+
+--
+ROLLBACK;
+
+--
+DROP TABLE t2 PURGE;
+CREATE TABLE t2 (c1 NUMBER);
+
+--
+INSERT INTO t2 VALUES (1);
+
+CREATE TABLE t2 (c1 NUMBER);
+
+ROLLBACK;
+
+--
+SELECT * FROM t2;

@@ -1,0 +1,30 @@
+--
+COL sal NEW_VALUE v_sal
+
+SELECT AVG (sal) AS sal FROM emp;
+
+SELECT ename, sal
+  FROM emp
+ WHERE sal >= &v_sal;
+
+--
+SELECT ename, sal                         -- ¸ÞÀÎ Äõ¸®
+  FROM emp
+ WHERE sal >= (SELECT AVG (sal) FROM emp) -- ¼­ºê Äõ¸®
+;
+
+--
+DROP TABLE t1 PURGE;
+DROP TABLE t2 PURGE;
+
+CREATE TABLE t1 (c1 NUMBER NOT NULL, c2 NUMBER NOT NULL);
+CREATE TABLE t2 (c1 NUMBER NOT NULL, c2 NUMBER);
+
+INSERT INTO t1 VALUES (1, 2);
+INSERT INTO t1 VALUES (2, 1);
+INSERT INTO t1 VALUES (2, 3);
+INSERT INTO t1 VALUES (3, 4);
+INSERT INTO t2 VALUES (1, 2);
+INSERT INTO t2 VALUES (2, 3);
+INSERT INTO t2 VALUES (2, NULL);
+COMMIT;

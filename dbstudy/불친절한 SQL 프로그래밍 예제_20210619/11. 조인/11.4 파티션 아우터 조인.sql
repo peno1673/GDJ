@@ -1,0 +1,35 @@
+--
+DROP TABLE t1 PURGE;
+DROP TABLE t2 PURGE;
+
+CREATE TABLE t1 (c1 NUMBER);
+CREATE TABLE t2 (c1 NUMBER, c2 VARCHAR2(1));
+
+INSERT INTO t1 VALUES (1);
+INSERT INTO t1 VALUES (2);
+INSERT INTO t1 VALUES (3);
+INSERT INTO t2 VALUES (1, 'A');
+INSERT INTO t2 VALUES (2, 'B');
+COMMIT;
+
+--
+SELECT a.c1 AS ac1, b.c1 AS bc1, b.c2 AS bc2
+  FROM t1 a
+  LEFT OUTER
+  JOIN t2 b
+    ON b.c1 = a.c1;
+
+--
+SELECT a.c1 AS ac1
+     , b.c1 AS bc1, b.c2 AS bc2
+  FROM t1 a
+  LEFT OUTER
+  JOIN t2 b PARTITION BY (b.c1)
+    ON b.c1 = a.c1;
+
+SELECT a.c1 AS ac1
+     , b.c1 AS bc1, b.c2 AS bc2
+  FROM t1 a
+  LEFT OUTER
+  JOIN t2 b PARTITION BY (b.c2)
+    ON b.c1 = a.c1;

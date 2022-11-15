@@ -1,0 +1,14 @@
+--
+SELECT PERCENTILE_CONT (0.5) WITHIN GROUP (ORDER BY sal)      AS c1
+     , PERCENTILE_CONT (0.5) WITHIN GROUP (ORDER BY hiredate) AS c2
+  FROM emp
+ WHERE deptno = 30;
+
+--
+SELECT PERCENTILE_DISC (0.5) WITHIN GROUP (ORDER BY sal)      AS c1
+     , PERCENTILE_DISC (0.5) WITHIN GROUP (ORDER BY hiredate) AS c2
+  FROM emp
+ WHERE deptno = 30;
+
+--
+SELECT MEDIAN (sal) AS c1 FROM emp WHERE deptno = 30;

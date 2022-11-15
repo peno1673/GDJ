@@ -1,0 +1,14 @@
+--
+sqlplus scott/tiger
+
+SELECT SYS_CONTEXT ('USERENV', 'SID') AS c1 FROM DUAL;
+
+DISC
+
+SELECT SYS_CONTEXT ('USERENV', 'SID') AS c1 FROM DUAL;
+
+CONN scott/tiger
+
+SELECT USERENV ('SID') AS c1 FROM DUAL;
+
+EXIT

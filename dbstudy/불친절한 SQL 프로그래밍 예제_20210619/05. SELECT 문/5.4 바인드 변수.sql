@@ -1,0 +1,19 @@
+--
+SELECT :b1 AS c1 FROM DUAL;
+ SET SERVEROUTPUT ON;
+--
+VAR b1 NUMBER;
+EXEC :b1 := 1;
+
+SELECT :b1 AS c1 FROM DUAL;
+
+--
+EXEC :b1 := 2
+
+SELECT :b1 AS c1 FROM DUAL;
+
+--
+HELP var
+
+--
+VAR b1 NUMBER = 3

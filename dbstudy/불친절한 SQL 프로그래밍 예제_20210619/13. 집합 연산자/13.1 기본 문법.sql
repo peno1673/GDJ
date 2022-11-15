@@ -1,0 +1,49 @@
+--
+SELECT c1 FROM t1
+UNION ALL
+SELECT c1 FROM t2;
+
+--
+SELECT c1, c2 FROM t1
+UNION ALL
+SELECT c1, c2 FROM t2;
+
+--
+SELECT c1 FROM t1
+UNION
+SELECT c1 FROM t2;
+
+--
+SELECT c1, c2 FROM t1
+UNION
+SELECT c1, c2 FROM t2;
+
+--
+SELECT '1' AS tp, empno, ename FROM emp WHERE job = 'ANALYST'
+UNION
+SELECT '2' AS tp, empno, ename FROM emp WHERE sal = 3000;
+
+--
+SELECT job, empno, ename FROM emp WHERE job = 'ANALYST' AND sal = 3000
+UNION
+SELECT job, empno, ename FROM emp WHERE job = 'MANAGER' AND sal > 2500;
+
+--
+SELECT c1 FROM t1
+INTERSECT
+SELECT c1 FROM t2;
+
+--
+SELECT c1, c2 FROM t1
+INTERSECT
+SELECT c1, c2 FROM t2;
+
+--
+SELECT c1 FROM t1
+MINUS
+SELECT c1 FROM t2;
+
+--
+SELECT c1, c2 FROM t1
+MINUS
+SELECT c1, c2 FROM t2;

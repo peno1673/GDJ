@@ -1,0 +1,95 @@
+--
+GRANT EXECUTE ON DBMS_CRYPTO TO scott;
+
+--
+SET SERVEROUTPUT ON
+
+EXEC DBMS_OUTPUT.PUT_LINE (DBMS_CRYPTO.HASH_SH1)
+
+--
+SELECT DBMS_CRYPTO.HASH (UTL_RAW.CAST_TO_RAW ('ABC'), 3) AS c1 FROM DUAL;
+
+--
+SELECT DBMS_CRYPTO.MAC (UTL_RAW.CAST_TO_RAW ('ABC'), 2, UTL_RAW.CAST_TO_RAW ('12345678')) AS c1
+  FROM DUAL;
+
+--
+SELECT DBMS_CRYPTO.ENCRYPT (UTL_RAW.CAST_TO_RAW ('ABC'), 4353
+                          , UTL_RAW.CAST_TO_RAW ('12345678')) AS c1
+  FROM DUAL;
+
+--
+SELECT UTL_RAW.CAST_TO_VARCHAR2 (
+           DBMS_CRYPTO.DECRYPT ('73946ADB1AF08FD6', 4353
+                              , UTL_RAW.CAST_TO_RAW ('12345678'))) AS c1
+  FROM DUAL;
+
+--
+SELECT DBMS_CRYPTO.RANDOMBYTES (16) AS c1 FROM DUAL;
+
+--
+SELECT DBMS_CRYPTO.RANDOMNUMBER AS c1 FROM DUAL;
+
+--
+SELECT DBMS_CRYPTO.RANDOMINTEGER AS c1 FROM DUAL;
+
+--
+CREATE OR REPLACE PACKAGE pkg_crypto
+IS
+    FUNCTION fnc_hash    (i_src IN VARCHAR2                   ) RETURN RAW;
+    FUNCTION fnc_mac     (i_src IN VARCHAR2, i_key IN VARCHAR2) RETURN RAW;
+    FUNCTION fnc_encrypt (i_src IN VARCHAR2, i_key IN VARCHAR2) RETURN RAW;
+    FUNCTION fnc_decrypt (i_src IN RAW     , i_key IN VARCHAR2) RETURN VARCHAR2;
+END;
+/
+
+--
+CREATE OR REPLACE PACKAGE BODY pkg_crypto
+IS
+    g_typ PLS_INTEGER :=
+        DBMS_CRYPTO.ENCRYPT_DES + DBMS_CRYPTO.CHAIN_CBC + DBMS_CRYPTO.PAD_PKCS5;
+
+    FUNCTION fnc_hash (i_src IN VARCHAR2)
+        RETURN RAW
+    IS
+    BEGIN
+        RETURN DBMS_CRYPTO.HASH (UTL_RAW.CAST_TO_RAW (i_src), DBMS_CRYPTO.HASH_SH1);
+    END;
+
+    FUNCTION fnc_mac (i_src IN VARCHAR2, i_key IN VARCHAR2)
+        RETURN RAW
+    IS
+    BEGIN
+        RETURN DBMS_CRYPTO.MAC (UTL_RAW.CAST_TO_RAW (i_src), DBMS_CRYPTO.HMAC_SH1
+                              , UTL_RAW.CAST_TO_RAW (i_key));
+    END;
+
+    FUNCTION fnc_encrypt (i_src IN VARCHAR2, i_key IN VARCHAR2)
+        RETURN RAW
+    IS
+    BEGIN
+        RETURN DBMS_CRYPTO.ENCRYPT (UTL_RAW.CAST_TO_RAW (i_src), g_typ
+                                  , UTL_RAW.CAST_TO_RAW (i_key));
+    END;
+
+    FUNCTION fnc_decrypt (i_src IN RAW, i_key IN VARCHAR2)
+        RETURN VARCHAR2
+    IS
+    BEGIN
+        RETURN (UTL_RAW.CAST_TO_VARCHAR2 (
+                    DBMS_CRYPTO.DECRYPT (i_src, g_typ, UTL_RAW.CAST_TO_RAW (i_key))));
+    END;
+END;
+/
+
+--
+SELECT pkg_crypto.fnc_hash ('ABC') AS c1 FROM DUAL;
+
+--
+SELECT pkg_crypto.fnc_mac ('ABC', '12345678') AS c1 FROM DUAL;
+
+--
+SELECT pkg_crypto.fnc_encrypt ('ABC', '12345678') AS c1 FROM DUAL;
+
+--
+SELECT pkg_crypto.fnc_decrypt ('73946ADB1AF08FD6', '12345678') AS c1 FROM DUAL;
