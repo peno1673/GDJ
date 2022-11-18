@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body,
+      div,
+      span,
+      applet,
+      object,
+      iframe,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      blockquote,
+      pre,
+      a,
+      abbr,
+      acronym,
+      address,
+      big,
+      cite,
+      code,
+      del,
+      dfn,
+      em,
+      img,
+      ins,
+      kbd,
+      q,
+      s,
+      samp,
+      small,
+      strike,
+      strong,
+      sub,
+      sup,
+      tt,
+      var,
+      b,
+      u,
+      i,
+      center,
+      dl,
+      dt,
+      dd,
+      ol,
+      ul,
+      li,
+      fieldset,
+      form,
+      label,
+      legend,
+      table,
+      caption,
+      tbody,
+      tfoot,
+      thead,
+      tr,
+      th,
+      td,
+      article,
+      aside,
+      canvas,
+      details,
+      embed,
+      figure,
+      figcaption,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      output,
+      ruby,
+      section,
+      summary,
+      time,
+      mark,
+      audio,
+      video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+      }
+      /* HTML5 display-role reset for older browsers */
+      article,
+      aside,
+      details,
+      figcaption,
+      figure,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      section {
+        display: block;
+      }
+      body {
+        line-height: 1;
+      }
+      ol,
+      ul {
+        list-style: none;
+      }
+      blockquote,
+      q {
+        quotes: none;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+        content: '';
+        content: none;
+      }
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      body {
+        background-color: rgb(237, 249, 253);
+      }
+      #all {
+        text-align: center;
+      }
+      #logo {
+        display: block;
+        margin: 103px auto 73px;
+      }
+      #check {
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .form {
+        box-sizing: border-box;
+        outline: none;
+        width: 427px;
+        height: 48px;
+        border: 2.7px solid seagreen;
+      }
+      #left {
+        margin-left: -40px;
+      }
+      #userId {
+        margin: 5px 0 0;
+        font-size: 14px;
+      }
+      #pw {
+        margin: 6px 0 18px;
+        font-size: 14px;
+      }
+      #signBtn {
+        height: 56px;
+        font-size: 18px;
+        font-weight: 550;
+        background-color: seagreen;
+        color: antiquewhite;
+        margin-bottom: 43px;
+        cursor: pointer;
+      }
+      #services {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+      }
+      .quest {
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .help {
+        color: gray;
+        font-size: 9px;
+        display: inline-block;
+        margin: 7px 0 5px;
+      }
+      .btmBtn {
+        background-color: teal;
+        color: antiquewhite;
+        width: 202px;
+        height: 52px;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #btn3 {
+        margin-left: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="all">
+      <div>
+        <a href="madeUi.html">
+          <img id="logo" src="logo.png" alt="구디" />
+        </a>
+      </div>
+      <form>
+        <div id="formDiv">
+          <span id="left">
+            <span id="check"> ※ 회원구분을 위해 체크해 주세요 </span>
+            <input type="radio" class="type" value="student" />수강생
+            <input type="radio" class="type" value="nomal" />일반회원 </span
+          ><br />
+          <input
+            type="text"
+            class="form"
+            id="userId"
+            placeholder="아이디"
+          /><br />
+          <input
+            type="password"
+            class="form"
+            id="pw"
+            placeholder="●●●●"
+          /><br />
+          <button class="form" id="signBtn">Sign In</button>
+        </div>
+      </form>
+      <div id="services">
+        <div>
+          <span class="quest">아직 회원이 아닌가요?</span><br />
+          <span class="help">가입하면 다양한 서비스 이용이 가능합니다.</span
+          ><br />
+          <a href="sign.html">
+            <button class="btmBtn">Sign Up</button>
+          </a>
+        </div>
+        <div id="btn3">
+          <span class="quest">아이디/비밀번호를 잊으셨나요?</span><br />
+          <span class="help">간단하게 아이디/비밀번호를 찾을 수 있습니다.</span
+          ><br />
+          <a href="find.html">
+            <button class="btmBtn">Find ID/PW</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        
+        .huka{position:relative; width:600px; height:250px; overflow:hidden; margin:120px auto; cursor:pointer;}
+        .huka img{width:100%; height:100%;}
+        .huka .off{position:absolute; z-index:10;left:0;top:0; }
+        .huka .on{position:absolute; left:0; top:0;}
+
+        .huka .off,.huka .on{width:100%; height:100%;}
+        .huka:hover .off{  
+            display: none;
+
+        }
+    </style>
+</head>
+<body>
+  
+    <div style="margin:0 auto; text-align: center;">
+        <h1>허카허카인</h1>
+        <img src="https://blog.kakaocdn.net/dn/bGHhpz/btrsFsA3rky/mDe7iUKZnqC1DHtmek6Zb0/img.gif"/>
+
+    </div>
+  
+    <div class="huka">
+        마우스를 올려주뎨용
+        <p class="off"><img src="https://img.hankyung.com/photo/202202/01.28819189.1.png"/></p>
+        <p class="on"><img src="https://img.insight.co.kr/static/2022/03/18/700/img_20220318074327_99veb293.webp"/></p>
+        
+    </div>
+
+</body>
+</html>
