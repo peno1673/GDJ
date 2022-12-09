@@ -579,7 +579,7 @@ public class UserServiceImpl implements UserService {
 			String redirectURI = URLEncoder.encode("http://localhost:9090" + request.getContextPath() + "/user/naver/login", "UTF-8");  // 네이버 로그인 Callback URL에 작성한 주소 입력 
 			SecureRandom random = new SecureRandom();
 			String state = new BigInteger(130, random).toString();
-			
+				
 			apiURL = "https://nid.naver.com/oauth2.0/authorize?response_type=code";
 			apiURL += "&client_id=" + clientId;
 			apiURL += "&redirect_uri=" + redirectURI;

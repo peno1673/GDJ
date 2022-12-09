@@ -37,7 +37,7 @@ public class MyController4 {
 	
 	
 	@ResponseBody
-	@PostMapping(value="contact/detail1"
+	@PostMapping(value = "contact/detail1"
 	           , produces=MediaType.APPLICATION_JSON_VALUE)
 	public Contact detail1(@RequestBody Contact contact) {  // post 방식으로 넘어온 JSON을 bean에 저장할 수 있다.
 		return contactService.execute1(contact);

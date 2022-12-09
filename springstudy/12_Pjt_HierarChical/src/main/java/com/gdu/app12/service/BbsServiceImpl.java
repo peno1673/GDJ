@@ -29,7 +29,6 @@ public class BbsServiceImpl implements BbsService {
 	@Override
 	public void findAllBbsList(HttpServletRequest request, Model model) {
 		
-		
 		// 파라미터 page, 전달되지 않으면 page=1로 처리
 		Optional<String> opt1 = Optional.ofNullable(request.getParameter("page"));
 		int page = Integer.parseInt(opt1.orElse("1"));
@@ -75,42 +74,51 @@ public class BbsServiceImpl implements BbsService {
 		return bbsMapper.insertBbs(bbs);
 		
 	}
+
 	
-	
+	/*
+		@Transactional
+		안녕. 난 트랜잭션을 처리하는 애너테이션이야.
+		INSERT/UPDATE/DELETE 중 2개 이상이 호출되는 서비스에 추가하면 되.
+	*/
 	@Transactional
 	@Override
 	public int addReply(HttpServletRequest request) {
 		
+		// 작성자, 제목
 		String writer = securityUtil.sha256(request.getParameter("writer"));
 		String title = securityUtil.preventXSS(request.getParameter("title"));
+		
+		// IP
 		String ip = request.getRemoteAddr();
 		
+		// 원글의 DEPTH, GROUP_NO, GROUP_ORDER
 		int depth = Integer.parseInt(request.getParameter("depth"));
-		int groupNo= Integer.parseInt(request.getParameter("groupNo"));
+		int groupNo = Integer.parseInt(request.getParameter("groupNo"));
 		int groupOrder = Integer.parseInt(request.getParameter("groupOrder"));
 		
-		BbsDTO bbs =BbsDTO.builder()
-					.depth(depth)
-					.groupNo(groupNo)
-					.groupOrder(groupOrder)
-					.build();
-					
+		// 원글DTO(updatePreviousReply를 위함)
+		BbsDTO bbs = new BbsDTO();
+		bbs.setDepth(depth);
+		bbs.setGroupNo(groupNo);
+		bbs.setGroupOrder(groupOrder);
+		
+		// updatePreviousReply 쿼리 실행
 		bbsMapper.updatePreviousReply(bbs);
 		
-		BbsDTO reply = BbsDTO.builder()
-						.writer(writer)
-						.title(title)
-						.ip(ip)
-						.depth(depth+1)
-						.groupNo(groupNo)
-						.groupOrder(groupOrder+1)
-						.build();
+		// 답글DTO
+		BbsDTO reply = new BbsDTO();
+		reply.setWriter(writer);
+		reply.setTitle(title);
+		reply.setIp(ip);
+		reply.setDepth(depth + 1);            // 답글 depth : 원글 depth + 1
+		reply.setGroupNo(groupNo);            // 답글 groupNo : 원글 groupNo
+		reply.setGroupOrder(groupOrder + 1);  // 답글 groupOrder : 원글 groupOrder + 1
 		
-		
+		// insertReply 쿼리 실행		
 		return bbsMapper.insertReply(reply);
+		
 	}
-	
-	
 
 	@Override
 	public int removeBbs(int bbsNo) {

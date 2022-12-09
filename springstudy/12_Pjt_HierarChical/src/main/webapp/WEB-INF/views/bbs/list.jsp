@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html>
@@ -76,6 +77,12 @@
 								<!-- 제목 -->
 								${bbs.title}
 								<!-- 답글달기 버튼 -->
+								<%--
+									1단 답글로 운용하는 경우 아래와 같이 처리한다.
+									<c:if test="${bbs.depth == 0}">
+										<input type="button" value="답글" class="btn_reply_write">
+									</c:if>
+								--%>
 								<input type="button" value="답글" class="btn_reply_write">
 								<script>
 									$('.btn_reply_write').click(function(){
@@ -85,7 +92,7 @@
 								</script>
 							</td>
 							<td>${bbs.ip}</td>
-							<td>${bbs.createDate}</td>
+							<td><fmt:formatDate value="${bbs.createDate}" pattern="yy/MM/dd HH:mm:ss" /></td>
 							<td>
 								<form method="post" action="${contextPath}/bbs/remove">
 									<input type="hidden" name="bbsNo" value="${bbs.bbsNo}">
