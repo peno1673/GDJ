@@ -11,7 +11,11 @@
 	</settings>
 	
 	<typeAliases>
-		<!--<typeAlias type="com.gdu.semi.domain.RetireUserDTO" alias="RetireUserDTO" />  -->
+		<typeAlias type="com.group.sharegram.schedule.domain.AnnualDTO" alias="AnnualDTO" />
+		<typeAlias type="com.group.sharegram.schedule.domain.AttendanceDTO" alias="AttendanceDTO" />
+		<typeAlias type="com.group.sharegram.schedule.domain.EarlyDTO" alias="EarlyDTO" />
+		<typeAlias type="com.group.sharegram.schedule.domain.ScheduleDTO" alias="ScheduleDTO" />
+		<typeAlias type="com.group.sharegram.schedule.domain.VacationDTO" alias="VacationDTO" />
 		
 	</typeAliases>
 
