@@ -7,10 +7,10 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
-<link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote-lite.min.css">
-<script src="${contextPath}/resources/summernote-0.8.18-dist/summernote-lite.min.js"></script>
-<script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
+<script src="/resources/js/jquery-3.6.1.min.js"></script>
+<link rel="stylesheet" href="/resources/summernote-0.8.18-dist/summernote-lite.min.css">
+<script src="/resources/summernote-0.8.18-dist/summernote-lite.min.js"></script>
+<script src="/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
 <script>
 	
 	$(document).ready(function(){
@@ -33,7 +33,7 @@
 		
 		// 목록
 		$('#btn_list').click(function(){
-			location.href = '${contextPath}/brd/list';
+			location.href = '/brd/list';
 		});
 		
 		// 서브밋
@@ -53,7 +53,7 @@
 
 	<div>
 		<h1>수정 화면</h1>
-		<form id="frm_board" action="${contextPath}/brd/modify" method="post">
+		<form id="frm_board" action="/brd/modify" method="post">
 			<input type="hidden" name="boardNo" value="${board.boardNo}">
 			<div>
 				<label for="title">제목</label>

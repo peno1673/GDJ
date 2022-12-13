@@ -10,7 +10,7 @@
 </head>
 <body>
 
-	<a href="${contextPath}/brd/list">게시판</a>
+	<a href="/brd/list">게시판</a>
 
 </body>
 </html>

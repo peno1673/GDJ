@@ -1,13 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
+<script src="/resources/js/jquery-3.6.1.min.js"></script>
 <script>
 	
 	$(document).ready(function(){
@@ -88,13 +87,13 @@
 <body>
 
 	<div>
-		<a href="${contextPath}/brd/write">새글작성</a>
+		<a href="/brd/write">새글작성</a>
 	</div>
 
 	<hr>
 
 	<div>
-		<form id="frm_list" action="${contextPath}/brd/remove/list" method="post">
+		<form id="frm_list" action="/brd/remove/list" method="post">
 			<div>
 				<button>선택삭제</button>
 			</div>
@@ -117,7 +116,7 @@
 							<td><input type="checkbox" name="boardNoList" value="${board.boardNo}" class="check_one"></td>
 							<td>${board.boardNo}</td>
 							<td>
-								<a href="${contextPath}/brd/detail?boardNo=${board.boardNo}">${board.title}</a>
+								<a href="/brd/detail?boardNo=${board.boardNo}">${board.title}</a>
 								<span class="icon_new" data-pass_day="${board.passDay}"></span>
 							</td>
 							<td>${board.writer}</td>
