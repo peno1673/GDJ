@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gdu.app15.domain.CommentDTO;
+import com.gdu.app15.domain.UserDTO;
 import com.gdu.app15.mapper.CommentMapper;
 import com.gdu.app15.util.PageUtil;
 
@@ -29,10 +30,22 @@ public class CommentServiceImpl implements CommentService {
 	}
 	
 	@Override
-	public Map<String, Object> addComment(CommentDTO comment) {
+	public Map<String, Object> addComment(HttpServletRequest request) {
+		
+		String content = request.getParameter("content");
+		int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+		int userNo = Integer.parseInt(request.getParameter("userNo"));
+		
+		CommentDTO comment = CommentDTO.builder()
+				.content(content)
+				.blogNo(blogNo)
+				.user(UserDTO.builder().userNo(userNo).build())
+				.build();
+		
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("isAdd", commentMapper.insertComment(comment) == 1);
 		return result;
+		
 	}
 	
 	@Override
@@ -65,10 +78,24 @@ public class CommentServiceImpl implements CommentService {
 	}
 	
 	@Override
-	public Map<String, Object> addReply(CommentDTO reply) {
+	public Map<String, Object> addReply(HttpServletRequest request) {
+		
+		String content = request.getParameter("content");
+		int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+		int groupNo = Integer.parseInt(request.getParameter("groupNo"));		
+		int userNo = Integer.parseInt(request.getParameter("userNo"));
+		
+		CommentDTO reply = CommentDTO.builder()
+				.content(content)
+				.blogNo(blogNo)
+				.groupNo(groupNo)
+				.user(UserDTO.builder().userNo(userNo).build())
+				.build();
+		
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("isAdd", commentMapper.insertReply(reply) == 1);
 		return result;
+		
 	}
 	
 }

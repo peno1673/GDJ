@@ -19,4 +19,5 @@ public class CommentDTO {
 	private int depth;
 	private int groupNo;
 	private Date createDate;
+	private UserDTO user;
 }

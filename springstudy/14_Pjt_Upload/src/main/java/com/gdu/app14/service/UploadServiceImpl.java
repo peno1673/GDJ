@@ -5,7 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -21,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -28,6 +32,8 @@ import com.gdu.app14.domain.AttachDTO;
 import com.gdu.app14.domain.UploadDTO;
 import com.gdu.app14.mapper.UploadMapper;
 import com.gdu.app14.util.MyFileUtil;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 public class UploadServiceImpl implements UploadService {
@@ -66,7 +72,7 @@ public class UploadServiceImpl implements UploadService {
 		
 		// 첨부된 파일 목록
 		List<MultipartFile> files = multipartRequest.getFiles("files");  // <input type="file" name="files">
-
+		
 		// 첨부 결과
 		int attachResult;
 		if(files.get(0).getSize() == 0) {  // 첨부가 없는 경우 (files 리스트에 [MultipartFile[field="files", filename=, contentType=application/octet-stream, size=0]] 이렇게 저장되어 있어서 files.size()가 1이다.
@@ -104,14 +110,31 @@ public class UploadServiceImpl implements UploadService {
 					
 					// 첨부파일 서버에 저장(업로드 진행)
 					multipartFile.transferTo(file);
-					
+
 					// AttachDTO 생성
 					AttachDTO attach = AttachDTO.builder()
 							.path(path)
 							.origin(origin)
 							.filesystem(filesystem)
+							.hasThumbnail(0)
 							.uploadNo(upload.getUploadNo())
 							.build();
+					
+					// 첨부파일의 Content-Type 확인
+					String contentType = Files.probeContentType(file.toPath());  // 이미지의 Content-Type(image/jpeg, image/png, image/gif)
+
+					// 첨부파일이 이미지이면 썸네일을 만듬
+					if(contentType != null && contentType.startsWith("image")) {
+					
+						// 썸네일을 서버에 저장
+						Thumbnails.of(file)
+							.size(50, 50)
+							.toFile(new File(dir, "s_" + filesystem));  // 썸네일의 이름은 s_로 시작함
+						
+						// 썸네일이 있는 첨부로 상태 변경
+						attach.setHasThumbnail(1);
+					
+					}
 					
 					// DB에 AttachDTO 저장
 					attachResult += uploadMapper.insertAttach(attach);
@@ -119,7 +142,7 @@ public class UploadServiceImpl implements UploadService {
 				}
 				
 			} catch(Exception e) {
-				
+				e.printStackTrace();
 			}
 			
 		}  // for
@@ -153,6 +176,32 @@ public class UploadServiceImpl implements UploadService {
 	public void getUploadByNo(int uploadNo, Model model) {
 		model.addAttribute("upload", uploadMapper.selectUploadByNo(uploadNo));
 		model.addAttribute("attachList", uploadMapper.selectAttachList(uploadNo));
+	}
+	
+	@Override
+	public ResponseEntity<byte[]> display(int attachNo) {
+		
+		AttachDTO attach = uploadMapper.selectAttachByNo(attachNo);
+		File file = new File(attach.getPath(), attach.getFilesystem());
+
+		ResponseEntity<byte[]> result = null;
+
+		try {
+
+			if(attach.getHasThumbnail() == 1) {
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Content-Type", Files.probeContentType(file.toPath()));
+				File thumbnail = new File(attach.getPath(), "s_" + attach.getFilesystem());
+				result = new ResponseEntity<byte[]>(FileCopyUtils.copyToByteArray(thumbnail), null, HttpStatus.OK);
+			}
+			
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+		
 	}
 	
 	@Override
@@ -206,8 +255,8 @@ public class UploadServiceImpl implements UploadService {
 	@Override
 	public ResponseEntity<Resource> downloadAll(String userAgent, int uploadNo) {
 		
-		// storage/temp 디렉터리에 임시 zip 파일을 만든 뒤 이를 다운로드 받을 수 있음
-		// com.gdu.app14.batch.DeleteTmpFiles에 의해서 storage/temp 디렉터리의 임시 zip 파일은 주기적으로 삭제됨
+		// /storage/temp 디렉터리에 임시 zip 파일을 만든 뒤 이를 다운로드 받을 수 있음
+		// com.gdu.app14.batch.DeleteTempFiles에 의해서 /storage/temp 디렉터리의 임시 zip 파일은 주기적으로 삭제됨
 		
 		// 다운로드 할 첨부 파일들의 정보(경로, 이름)
 		List<AttachDTO> attachList = uploadMapper.selectAttachList(uploadNo);
@@ -217,20 +266,20 @@ public class UploadServiceImpl implements UploadService {
 		ZipOutputStream zout = null;   // zip 파일 생성 스트림
 		FileInputStream fin = null;
 		
-		// storage/temp 디렉터리에 zip 파일 생성
-		String tmpPath = "storage" + File.separator + "temp";
+		// /storage/temp 디렉터리에 zip 파일 생성
+		String tempPath = myFileUtil.getTempPath();
 		
-		File tmpDir = new File(tmpPath);
-		if(tmpDir.exists() == false) {
-			tmpDir.mkdirs();
+		File tempDir = new File(tempPath);
+		if(tempDir.exists() == false) {
+			tempDir.mkdirs();
 		}
 		
 		// zip 파일명은 타임스탬프 값으로 생성
-		String tmpName =  System.currentTimeMillis() + ".zip";
+		String tempName =  System.currentTimeMillis() + ".zip";
 		
 		try {
 			
-			fout = new FileOutputStream(new File(tmpPath, tmpName));
+			fout = new FileOutputStream(new File(tempDir, tempName));
 			zout = new ZipOutputStream(fout);
 			
 			// 첨부가 있는지 확인
@@ -267,7 +316,7 @@ public class UploadServiceImpl implements UploadService {
 
 		
 		// 반환할 Resource
-		File file = new File(tmpPath, tmpName);
+		File file = new File(tempDir, tempName);
 		Resource resource = new FileSystemResource(file);
 		
 		// Resource가 없으면 종료 (다운로드할 파일이 없음)
@@ -277,7 +326,7 @@ public class UploadServiceImpl implements UploadService {
 		
 		// 다운로드 헤더 만들기
 		HttpHeaders header = new HttpHeaders();
-		header.add("Content-Disposition", "attachment; filename=" + tmpName);  // 다운로드할 zip파일명은 타임스탬프로 만든 이름을 그대로 사용
+		header.add("Content-Disposition", "attachment; filename=" + tempName);  // 다운로드할 zip파일명은 타임스탬프로 만든 이름을 그대로 사용
 		header.add("Content-Length", file.length() + "");
 		
 		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
@@ -347,14 +396,31 @@ public class UploadServiceImpl implements UploadService {
 					
 					// 첨부파일 서버에 저장(업로드 진행)
 					multipartFile.transferTo(file);
-					
+
 					// AttachDTO 생성
 					AttachDTO attach = AttachDTO.builder()
 							.path(path)
 							.origin(origin)
 							.filesystem(filesystem)
-							.uploadNo(uploadNo)
+							.hasThumbnail(0)
+							.uploadNo(upload.getUploadNo())
 							.build();
+					
+					// 첨부파일의 Content-Type 확인
+					String contentType = Files.probeContentType(file.toPath());  // 이미지의 Content-Type(image/jpeg, image/png, image/gif)
+
+					// 첨부파일이 이미지이면 썸네일을 만듬
+					if(contentType != null && contentType.startsWith("image")) {
+					
+						// 썸네일을 서버에 저장
+						Thumbnails.of(file)
+							.size(50, 50)
+							.toFile(new File(dir, "s_" + filesystem));  // 썸네일의 이름은 s_로 시작함
+						
+						// 썸네일이 있는 첨부로 상태 변경
+						attach.setHasThumbnail(1);
+					
+					}
 					
 					// DB에 AttachDTO 저장
 					attachResult += uploadMapper.insertAttach(attach);
@@ -362,7 +428,7 @@ public class UploadServiceImpl implements UploadService {
 				}
 				
 			} catch(Exception e) {
-				
+				e.printStackTrace();
 			}
 			
 		}  // for
@@ -407,11 +473,22 @@ public class UploadServiceImpl implements UploadService {
 			// 첨부 파일을 File 객체로 만듬
 			File file = new File(attach.getPath(), attach.getFilesystem());
 			
-			// 삭제
+			// 원본 이미지 삭제
 			if(file.exists()) {
 				file.delete();
 			}
 			
+			// 첨부파일이 이미지이면 썸네일을 삭제
+			if(attach.getHasThumbnail() == 1) {
+				
+				// 썸네일 이미지 삭제
+				File thumbnail = new File(attach.getPath(), "s_" + attach.getFilesystem());
+				if(thumbnail.exists()) {
+					thumbnail.delete();
+				}
+				
+			}
+
 		}
 		
 	}
@@ -433,11 +510,19 @@ public class UploadServiceImpl implements UploadService {
 			if(attachList != null && attachList.isEmpty() == false) {
 				// 순회하면서 하나씩 삭제
 				for(AttachDTO attach : attachList) {
-					// 삭제할 첨부 파일의 File 객체 생성
+					// 첨부 파일을 File 객체로 만듬
 					File file = new File(attach.getPath(), attach.getFilesystem());
-					// 삭제
+					// 원본 이미지 삭제
 					if(file.exists()) {
 						file.delete();
+					}
+					// 첨부파일이 이미지이면 썸네일을 삭제
+					if(attach.getHasThumbnail() == 1) {
+						// 썸네일 이미지 삭제
+						File thumbnail = new File(attach.getPath(), "s_" + attach.getFilesystem());
+						if(thumbnail.exists()) {
+							thumbnail.delete();
+						}
 					}
 				}
 			}

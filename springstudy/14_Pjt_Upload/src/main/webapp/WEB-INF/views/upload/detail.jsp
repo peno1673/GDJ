@@ -8,6 +8,14 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
+<!-- jquery-ui 사용을 위한 js와 css -->
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<style>
+	a {
+		text-decoration: none;
+	}
+</style>
 <script>
 
 	$(function(){
@@ -30,6 +38,10 @@
 		$('#btn_upload_list').click(function(event){
 			location.href = '${contextPath}/upload/list';
 		});
+		
+		// 첨부 이미지에 툴팁 적용
+		// 태그의 title 속성 값이 툴팁으로 나타남
+		$('.attach_img').tooltip();
 		
 	});
 
@@ -58,13 +70,20 @@
 	<hr>
 	
 	<div>
-		<h3>첨부 다운로드</h3>	
-		<c:forEach items="${attachList}" var="attach">
-			<div>
-				<a href="${contextPath}/upload/download?attachNo=${attach.attachNo}">${attach.origin}</a>
-			</div>
-		</c:forEach>
-		<br>
+		<h3>첨부 목록 및 다운로드</h3>
+		<div>
+			<c:forEach items="${attachList}" var="attach">
+				<a href="${contextPath}/upload/download?attachNo=${attach.attachNo}">
+					<c:if test="${attach.hasThumbnail == 1}">
+						<img src="${contextPath}/upload/display?attachNo=${attach.attachNo}" class="attach_img" title="${attach.origin}">
+					</c:if>
+					<c:if test="${attach.hasThumbnail == 0}">
+						<img src="${contextPath}/resources/images/attach.png" width="50px" class="attach_img" title="${attach.origin}">
+					</c:if>
+				</a>
+			</c:forEach>
+		</div>
+		<br><br>
 		<div>
 			<a href="${contextPath}/upload/downloadAll?uploadNo=${upload.uploadNo}">모두 다운로드</a>
 		</div>

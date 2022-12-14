@@ -9,5 +9,12 @@
 	<select id="selectCalendarList">
 		
 	</select>
-
+	
+	<insert id="insertSchedule" parameterType="ScheduleDTO" >
+		INSERT INTO 
+   			SCHEDULE
+        		(SCHEDULE_NO , EMP_NO , SCHEDULE_TITLE , SCHEDULE_START , SCHEDULE_END  )
+    		VALUES
+        		(SCH_SEQ.NEXTVAL , #{empNo} , #{scheduleTitle} , #{scheduleStart} , #{scheduleEnd})
+	</insert>
 </mapper>

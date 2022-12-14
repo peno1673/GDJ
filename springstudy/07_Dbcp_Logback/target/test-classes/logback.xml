@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+
+	<!-- Appenders -->
+	<!--
+		%date{패턴} : 로그기록시간(SimpleDateFormat과 동일한 패턴 방식을 사용함)
+		%thread     : 동작하는 스레드
+		%level      : 로그레벨(FATAL, ERROR, WARN, INFO, DEBUG, TRACE), %-5level은 5자리로 글자폭을 맞춤
+		%logger     : 로거이름(로그 찍는 클래스), %logger{36}는 최대 글자 수가 36자
+		%msg        : 로그메시지
+		%n          : new line
+	-->
+
+	<variable name="LOG_HOME" value="/storage/log" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				%date{HH:mm:ss.SSS, Asia/Seoul} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>${LOG_HOME}/app07.log</file>
+		<encoder>
+			<pattern>
+				%date [%thread] %-5level %logger{36} [%file:%line] - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 매일 Rolling -->
+			<fileNamePattern>${LOG_HOME}/app07.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<!-- 5kb씩 로그 분할 -->
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>5kb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- 30일 분량의 기록을 총 3GB로 제한 -->
+			<maxHistory>30</maxHistory>
+      		<totalSizeCap>3gb</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%date [%thread] %-5level %logger{36} [%file:%line] - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<!--
+		로그레벨 (로그가 찍히는 상황)
+		1. OFF   : 로그 안 남김
+		2. ERROR : FATAL보다는 덜 심각한 에러
+		3. WARN  : 잠재적 문제
+		4. INFO  : 프로그램이 진행되는 상황
+		5. DEBUG : 디버깅
+		6. TRACE : DEBUG보다 세밀한 정보
+	-->
+
+	<!-- Application Loggers : com.gdu.app07 패키지는 DEBUG 수준의 로그를 찍는다. -->
+	<logger name="com.gdu.app07" level="DEBUG" />
+
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core" level="OFF" />
+	<logger name="org.springframework.beans" level="OFF" />
+	<logger name="org.springframework.context" level="OFF" />
+	<logger name="org.springframework.web" level="OFF" />
+	
+	<!-- Root Logger -->
+	<root level="DEBUG">
+ 		<!-- <appender-ref ref="STDOUT" /> -->
+ 		<!-- <appender-ref ref="FILE" /> -->
+ 		<appender-ref ref="ROLLING" />
+	</root>
+	
+</configuration>

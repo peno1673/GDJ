@@ -50,7 +50,8 @@ public class UploadServiceImpl implements UploadService {
 	private PageUtil pageUtil;
 	
 	@Override
-	public void getUploadList(HttpServletRequest request,Model model) {
+	public void getUploadList(HttpServletRequest request, Model model) {
+		
 		Optional<String> opt = Optional.ofNullable(request.getParameter("page"));
 		int page = Integer.parseInt(opt.orElse("1"));
 		
@@ -59,10 +60,10 @@ public class UploadServiceImpl implements UploadService {
 		pageUtil.setPageUtil(page, totalRecord);
 		
 		Map<String, Object> map = new HashMap<>();
-		map.put("begin", pageUtil.getBegin() - 1 );
+		map.put("begin", pageUtil.getBegin() - 1);  // MySQL은 begin이 0부터 시작함
 		map.put("recordPerPage", pageUtil.getRecordPerPage());
 		
-		model.addAttribute("uploadList", map);
+		model.addAttribute("uploadList", uploadMapper.selectUploadList(map));
 		model.addAttribute("paging", pageUtil.getPaging("/upload/list"));
 		
 	}

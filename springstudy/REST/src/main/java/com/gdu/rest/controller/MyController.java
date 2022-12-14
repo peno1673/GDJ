@@ -16,4 +16,9 @@ public class MyController {
 		return "member/handle";
 	}
 	
+	@GetMapping("/upload/handle")
+	public String uploadHandle() {
+		return "upload/handle";
+	}
+	
 }

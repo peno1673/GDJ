@@ -27,21 +27,17 @@ public class BbsServiceImpl implements BbsService {
 	private SecurityUtil securityUtil;
 	
 	@Override
-	public void findAllBbsList(HttpServletRequest request, Model model) {
+	public void findBbsList(HttpServletRequest request, Model model) {
 		
 		// 파라미터 page, 전달되지 않으면 page=1로 처리
-		Optional<String> opt1 = Optional.ofNullable(request.getParameter("page"));
-		int page = Integer.parseInt(opt1.orElse("1"));
+		Optional<String> opt = Optional.ofNullable(request.getParameter("page"));
+		int page = Integer.parseInt(opt.orElse("1"));
 		
-		// 파라미터 recordPerPage, 전달되지 않으면 recordPerPage=10으로 처리
-		Optional<String> opt2 = Optional.ofNullable(request.getParameter("recordPerPage"));
-		int recordPerPage = Integer.parseInt(opt2.orElse("10"));
-
 		// 전체 게시글 개수
-		int totalRecord = bbsMapper.selectAllBbsCount();
+		int totalRecord = bbsMapper.selectBbsCount();
 		
 		// 페이징에 필요한 모든 계산 완료
-		pageUtil.setPageUtil(page, recordPerPage, totalRecord);
+		pageUtil.setPageUtil(page, totalRecord);
 		
 		// DB로 보낼 Map(begin + end)
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -49,13 +45,12 @@ public class BbsServiceImpl implements BbsService {
 		map.put("end", pageUtil.getEnd());
 		
 		// DB에서 목록 가져오기
-		List<BbsDTO> bbsList = bbsMapper.selectAllBbsList(map);
+		List<BbsDTO> bbsList = bbsMapper.selectBbsList(map);
 		
 		// 뷰로 보낼 데이터
 		model.addAttribute("bbsList", bbsList);
-		model.addAttribute("paging", pageUtil.getPaging(request.getContextPath() + "/bbs/list?recordPerPage=" + recordPerPage));
+		model.addAttribute("paging", pageUtil.getPaging(request.getContextPath() + "/bbs/list"));
 		model.addAttribute("beginNo", totalRecord - (page - 1) * pageUtil.getRecordPerPage());
-		model.addAttribute("recordPerPage", recordPerPage);
 		
 	}
 
@@ -86,7 +81,7 @@ public class BbsServiceImpl implements BbsService {
 	public int addReply(HttpServletRequest request) {
 		
 		// 작성자, 제목
-		String writer = securityUtil.sha256(request.getParameter("writer"));
+		String writer = securityUtil.preventXSS(request.getParameter("writer"));
 		String title = securityUtil.preventXSS(request.getParameter("title"));
 		
 		// IP

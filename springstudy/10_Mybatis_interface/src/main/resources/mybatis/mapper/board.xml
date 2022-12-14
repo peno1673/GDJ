@@ -4,10 +4,12 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!-- mapper의 namespace를 Mapper Interface로 지정해 준다. -->
+
 <mapper namespace="com.gdu.app10.mapper.BoardMapper">
 
-	<select id="selectAllBoards" resultType="Board">
-		SELECT BOARD_NO, TITLE, CONTENT, WRITER, CREATE_DATE, MODIFY_DATE
+	<select id="selectBoardList" resultType="Board">
+		SELECT BOARD_NO, TITLE, CONTENT, WRITER, CREATE_DATE, MODIFY_DATE, FLOOR(SYSDATE - TO_DATE(CREATE_DATE)) AS PASS_DAY
 		  FROM BOARD
 		 ORDER BY BOARD_NO DESC
 	</select>
@@ -35,6 +37,16 @@
 		DELETE
 		  FROM BOARD
 		 WHERE BOARD_NO = #{boardNo}
+	</delete>
+	
+	<delete id="deleteBoardList" parameterType="List">
+		DELETE
+		  FROM BOARD
+		<where> 
+		 	<foreach collection="list" item="boardNo" open="BOARD_NO IN(" separator="," close=")">
+				#{boardNo}
+			</foreach>
+		</where>
 	</delete>
 
 </mapper>

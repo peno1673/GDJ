@@ -19,4 +19,5 @@ public class BlogDTO {
 	private String ip;
 	private Date createDate;
 	private Date modifyDate;
+	private UserDTO user;
 }

@@ -16,4 +16,5 @@ public class AttachDTO {
 	private String filesystem;
 	private int downloadCnt;
 	private int uploadNo;
+	private int hasThumbnail;
 }

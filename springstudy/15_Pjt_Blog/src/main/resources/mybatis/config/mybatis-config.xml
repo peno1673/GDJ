@@ -12,7 +12,10 @@
 	
 	<typeAliases>
 		<typeAlias type="com.gdu.app15.domain.BlogDTO" alias="BlogDTO" />
+		<typeAlias type="com.gdu.app15.domain.SummernoteImageDTO" alias="SummernoteImageDTO" />
 		<typeAlias type="com.gdu.app15.domain.CommentDTO" alias="CommentDTO" />
+		<typeAlias type="com.gdu.app15.domain.UserDTO" alias="UserDTO" />
+		<typeAlias type="com.gdu.app15.domain.GoodDTO" alias="GoodDTO" />
 	</typeAliases>
 
 </configuration>

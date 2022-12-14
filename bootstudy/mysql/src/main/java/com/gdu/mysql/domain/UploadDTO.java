@@ -1,7 +1,6 @@
 package com.gdu.mysql.domain;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

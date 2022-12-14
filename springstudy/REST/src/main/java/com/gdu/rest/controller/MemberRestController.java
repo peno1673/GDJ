@@ -18,35 +18,36 @@ import com.gdu.rest.domain.MemberDTO;
 import com.gdu.rest.service.MemberService;
 
 /*
- * 	REST : Representational State Transfer
- * 
- * 1. 자원을 정의하고 자원의 주소를 지정하는 방속에 대한 하나의 형식이다.
- * 2. REST 방식을 따르는 시스템을 Restful하다 라고 표현한다
- * 3. 동작을 URL + Method 조합으로 결정한다
- * 4. 파라미터가 URL에 경로처럼 포함된다.(?를 사용하지 않는다.)
- * 5. CRUD 처리 방식
- * 			URL  		METHOD
- *    1) 삽입/members   	POST
- *    2) 목록/members      GET
- *    3) 상세/members/1    GET
- * 	  4) 수정/members     put
- * 	  5) 삭제/members/1   DELETE
- * */
-
-@RestController // 이 커트롤러는 모든 메소드에 @ResponseBody 애너테이션을 추가한다.
-public class MemberRestController {
+	REST : REpresentational State Transfer
 	
+	1. 자원을 정의하고 자원의 주소를 지정하는 방식에 대한 하나의 형식이다.
+	2. REST 방식을 따르는 시스템을 "RESTful하다"라고 표현한다.
+	3. 동작을 URL + Method 조합으로 결정한다.
+	4. 파라미터가 URL에 경로처럼 포함된다.(?를 사용하지 않는다.)
+	5. CRUD 처리 방식
+                 URL         Method
+		1) 삽입  /members    POST
+		2) 목록  /members    GET
+		3) 상세  /members/1  GET
+		4) 수정  /members    PUT
+		5) 삭제  /members/1  DELETE
+*/
+
+@RestController  // 이 컨트롤러는 모든 메소드에 @ResponseBody 애너테이션을 추가한다.
+public class MemberRestController {
+
 	@Autowired
 	private MemberService memberService;
 	
-	//삽입
-	@PostMapping(value="/members", produces = "application/json")
-	public Map<String, Object> addMember(@RequestBody MemberDTO member , HttpServletResponse response){
+	// 삽입
+	@PostMapping(value="/members", produces="application/json")
+	public Map<String, Object> addMember(@RequestBody MemberDTO member, HttpServletResponse response) {
 		return memberService.register(member, response);
 	}
 	
-	@GetMapping(value="/members/page/{page}", produces = "application/json")
-	public Map<String, Object> getMemberList(@PathVariable(value="page", required=false) Optional<String> opt ){
+	// 목록
+	@GetMapping(value="/members/page/{page}", produces="application/json")
+	public Map<String, Object> getMemberList(@PathVariable(value="page", required=false) Optional<String> opt) {
 		int page = Integer.parseInt(opt.orElse("1"));
 		return memberService.getMemberList(page);
 	}
@@ -58,22 +59,16 @@ public class MemberRestController {
 		return memberService.getMemberByNo(memberNo);
 	}
 	
+	// 수정
 	@PutMapping(value="/members", produces="application/json")
-	public Map<String, Object> modifyMember(@RequestBody Map<String,Object> map , HttpServletResponse response){
+	public Map<String, Object> modifyMember(@RequestBody Map<String, Object> map, HttpServletResponse response) {
 		return memberService.modifyMember(map, response);
 	}
 	
+	// 삭제
 	@DeleteMapping(value="/members/{memberNoList}", produces="application/json")
-	public Map<String, Object> removeMemberList(@PathVariable String memberNoList ){
-		System.out.println("--------------------------------------------------"+memberNoList);
+	public Map<String, Object> removeMemberList(@PathVariable String memberNoList) {
 		return memberService.removeMemberList(memberNoList);
 	}
-	
-//	//삽입
-//	@PostMapping(value="/members", produces = "application/json")
-//	public Responseentity<> addMember(@RequestBody MemberDTO member , HttpServletResponse response){
-//		return null;
-//	}
-	
 	
 }

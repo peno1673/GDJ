@@ -3,13 +3,11 @@ package com.gdu.app12.domain;
 import java.sql.Date;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class BbsDTO {
 	private int bbsNo;
@@ -21,5 +19,4 @@ public class BbsDTO {
 	private int depth;
 	private int groupNo;
 	private int groupOrder;
-	
 }

@@ -28,9 +28,9 @@
 	
 	<insert id="insertAttach" parameterType="AttachDTO">
 		INSERT INTO ATTACH
-			(ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, UPLOAD_NO)
+			(ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, HAS_THUMBNAIL, UPLOAD_NO)
 		VALUES
-			(ATTACH_SEQ.NEXTVAL, #{path}, #{origin}, #{filesystem}, 0, #{uploadNo})
+			(ATTACH_SEQ.NEXTVAL, #{path}, #{origin}, #{filesystem}, 0, #{hasThumbnail}, #{uploadNo})
 	</insert>
 	
 	<select id="selectUploadByNo" parameterType="int" resultType="UploadDTO">
@@ -40,7 +40,7 @@
 	</select>
 	
 	<select id="selectAttachList" parameterType="int" resultType="AttachDTO">
-		SELECT ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, UPLOAD_NO
+		SELECT ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, HAS_THUMBNAIL, UPLOAD_NO
 		  FROM ATTACH
 		 WHERE UPLOAD_NO = #{uploadNo}
 	</select>
@@ -52,7 +52,7 @@
 	</update>
 	
 	<select id="selectAttachByNo" parameterType="int" resultType="AttachDTO">
-		SELECT ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, UPLOAD_NO
+		SELECT ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, HAS_THUMBNAIL, UPLOAD_NO
 		  FROM ATTACH
 		 WHERE ATTACH_NO = #{attachNo}
 	</select>
@@ -78,11 +78,9 @@
 	</delete>
 	
 	<select id="selectAttachListInYesterday" resultType="AttachDTO">
-		SELECT ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, UPLOAD_BOARD_NO
+		SELECT ATTACH_NO, PATH, ORIGIN, FILESYSTEM, DOWNLOAD_CNT, HAS_THUMBNAIL, UPLOAD_NO
 		  FROM ATTACH
 		 WHERE PATH = CONCAT('storage\\', TO_CHAR(SYSDATE - 1, 'yyyy\\mm\\dd'))
 	</select>
-	
-	
 	
 </mapper>

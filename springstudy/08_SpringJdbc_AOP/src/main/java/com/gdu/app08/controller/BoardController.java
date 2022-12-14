@@ -30,27 +30,27 @@ public class BoardController {
 	}
 	
 	
-	@GetMapping("brd/list")
+	@GetMapping("/brd/list")
 	public String list(Model model) {  // Model은 forward할 속성(Attribute)을 저장할 때 사용한다.
 		model.addAttribute("boards", boardService.findAllBoards());
 		return "board/list";  // board 폴더의 list.jsp로 forward
 	}
 	
 	
-	@GetMapping("brd/write")
+	@GetMapping("/brd/write")
 	public String write() {
 		return "board/write";  // board 폴더의 write.jsp로 forward
 	}
 	
 	
-	@PostMapping("brd/add")
+	@PostMapping("/brd/add")
 	public String add(BoardDTO board) {
 		boardService.saveBoard(board);  // saveBoard()로부터 0/1이 반환되지만 처리하지 않았다.
 		return "redirect:/brd/list";
 	}	
 	
 	
-	@GetMapping("brd/detail")
+	@GetMapping("/brd/detail")
 	public String detail(@RequestParam(value="board_no", required=false, defaultValue="0") int board_no
 			           , Model model) {
 		model.addAttribute("board", boardService.findBoardByNo(board_no));
@@ -58,7 +58,7 @@ public class BoardController {
 	}
 	
 	
-	@PostMapping("brd/edit")
+	@PostMapping("/brd/edit")
 	public String edit(int board_no
 			         , Model model) {
 		model.addAttribute("board", boardService.findBoardByNo(board_no));
@@ -66,29 +66,28 @@ public class BoardController {
 	}
 	
 	
-	@PostMapping("brd/modify")
+	@PostMapping("/brd/modify")
 	public String modify(BoardDTO board) {
 		boardService.modifyBoard(board);  // modifyBoard()로부터 0/1이 반환되지만 처리하지 않았다.
 		return "redirect:/brd/detail?board_no=" + board.getBoard_no();
 	}
 	
 	
-	@PostMapping("brd/remove")
+	@PostMapping("/brd/remove")
 	public String remove(int board_no) {
 		boardService.removeBoard(board_no);  // removeBoard()로부터 0/1이 반환되지만 처리하지 않았다.
 		return "redirect:/brd/list";
 	}
 	
 	
-	// 트랜잭션 확인을 위해서 testTransaction() 메소드를 호출하는 매핑 작성
-	// 동작 확인을 위해서 http://localhost:9090/app08/brd/transaction 입력
-	// BoardServiceImpl의 testTransaction() 메소드가 동작하는데 이 메소드에는 오류가 있기 때문에 예외가 발생함
+	// 트랜잭션 확인을 위해서 testTx() 메소드를 호출하는 매핑 작성
+	// 동작 확인을 위해서 http://localhost:9090/app08/brd/tx 입력
+	// BoardServiceImpl의 testTx() 메소드가 동작하는데 이 메소드에는 오류가 있기 때문에 예외가 발생함
 	// Board 테이블을 열고, 트랜잭션제목, 트랜잭션내용, 트랜잭션작성자 내용을 가진 행(Row)가 있는지 확인 -> 없으면 트랜잭션이 잘 동작한 것임
-	@GetMapping("brd/transaction")
+	@GetMapping("/brd/tx")
 	public String transaction() {
-		boardService.testTransaction();
+		boardService.testTx();
 		return "redirect:/brd/list";
 	}
-
 	
 }

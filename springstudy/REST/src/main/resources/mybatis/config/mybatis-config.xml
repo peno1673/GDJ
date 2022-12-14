@@ -12,6 +12,8 @@
 	
 	<typeAliases>
 		<typeAlias type="com.gdu.rest.domain.MemberDTO" alias="MemberDTO" />
+		<typeAlias type="com.gdu.rest.domain.UploadDTO" alias="UploadDTO" />
+		<typeAlias type="com.gdu.rest.domain.AttachDTO" alias="AttachDTO" />
 	</typeAliases>
 
 </configuration>

@@ -51,6 +51,12 @@ public class UploadController {
 	}
 	
 	@ResponseBody
+	@GetMapping("/upload/display")
+	public ResponseEntity<byte[]> display(@RequestParam int attachNo){
+		return uploadService.display(attachNo);
+	}
+	
+	@ResponseBody
 	@GetMapping("/upload/download")
 	public ResponseEntity<Resource> download(@RequestHeader("User-Agent") String userAgent, @RequestParam("attachNo") int attachNo) {
 		return uploadService.download(userAgent, attachNo);
@@ -74,7 +80,7 @@ public class UploadController {
 	}
 	
 	@GetMapping("/upload/attach/remove")
-	public String attachRemove(@RequestParam("uploadNo") int uploadNo, @RequestParam("attachNo") int attachNo) {
+	public String uploadAttachRemove(@RequestParam("uploadNo") int uploadNo, @RequestParam("attachNo") int attachNo) {
 		uploadService.removeAttachByAttachNo(attachNo);
 		return "redirect:/upload/detail?uploadNo=" + uploadNo;
 	}

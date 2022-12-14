@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.gdu.rest.domain.MemberDTO;
 import com.gdu.rest.mapper.MemberMapper;
-import com.gdu.rest.util.PageUtil;
+import com.gdu.rest.util.NaverPageUtil;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -24,7 +24,7 @@ public class MemberServiceImpl implements MemberService {
 	private MemberMapper memberMapper;
 	
 	@Autowired
-	private PageUtil pageUtil;
+	private NaverPageUtil naverPageUtil;
 	
 	@Override
 	public Map<String, Object> register(MemberDTO member, HttpServletResponse response) {
@@ -81,53 +81,67 @@ public class MemberServiceImpl implements MemberService {
 	public Map<String, Object> getMemberList(int page) {
 		
 		int totalRecord = memberMapper.selectMemberCount();
-		
-		pageUtil.setPageUtil(page, totalRecord);
+		naverPageUtil.setNaverPageUtil(page, totalRecord);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("begin", pageUtil.getBegin());
-		map.put("end", pageUtil.getEnd());
+		map.put("begin", naverPageUtil.getBegin());
+		map.put("end", naverPageUtil.getEnd());
 		
-		Map<String, Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("memberList", memberMapper.selectMemberListByMap(map));
-		result.put("pageUtil", pageUtil);
+		result.put("naverPageUtil", naverPageUtil);
 		
 		return result;
+		
 	}
 	
 	@Override
-	public Map<String, Object> getMemberByNo(int MemberNo) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("member", memberMapper.selectMemberByNo(MemberNo));
+	public Map<String, Object> getMemberByNo(int memberNo) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("member", memberMapper.selectMemberByNo(memberNo));
 		return result;
 	}
 	
 	@Override
-	public Map<String, Object> modifyMember(Map<String,Object> map, HttpServletResponse response) {
+	public Map<String, Object> modifyMember(Map<String, Object> map, HttpServletResponse response) {
 		
 		try {
-			Map<String, Object> result = new HashMap<>();
+			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("updateResult", memberMapper.updateMember(map));
 			return result;
-		} catch (DataIntegrityViolationException e) {
+		} catch(DataIntegrityViolationException e) {
 			try {
 				response.setContentType("text/plain; charset=UTF-8");
 				PrintWriter out = response.getWriter();
-				response.setStatus(501);
-				out.println("필수 정보가누락되었습니다");
+				response.setStatus(501);  // 응답코드 501
+				out.println("필수 정보가 누락되었습니다.");  // 응답 메시지
 				out.close();
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
+		} catch(Exception e) {
+			
+			try {
+				response.setContentType("text/plain; charset=UTF-8");
+				PrintWriter out = response.getWriter();
+				response.setStatus(502);  // 응답 코드 502
+				out.println("입력 정보를 확인하세요.");  // 응답 메시지
+				out.close();
+			} catch(Exception e2) {
+				e2.printStackTrace();
+			}
+			
 		}
+		
 		return null;
+		
 	}
 	
 	@Override
 	public Map<String, Object> removeMemberList(String memberNoList) {
-		List<String> list = Arrays.asList(memberNoList.split(","));
-		Map<String, Object> result = new HashMap<>();
-		result.put("deleteResult", memberMapper.deleteMember(list));
+		List<String> list = Arrays.asList(memberNoList.split("\\,"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("deleteResult", memberMapper.deleteMemberList(list));
 		return result;
 	}
 	

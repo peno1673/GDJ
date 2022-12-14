@@ -29,8 +29,8 @@ public class UploadController {
 	}
 	
 	@GetMapping("/upload/list")
-	public String list(HttpServletRequest request,Model model) {
-		uploadService.getUploadList(request,model);
+	public String list(HttpServletRequest request, Model model) {
+		uploadService.getUploadList(request, model);
 		return "upload/list";
 	}
 	

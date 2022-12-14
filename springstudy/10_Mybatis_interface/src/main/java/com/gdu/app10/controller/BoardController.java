@@ -1,5 +1,8 @@
 package com.gdu.app10.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.gdu.app10.domain.BoardDTO;
 import com.gdu.app10.service.BoardService;
 
 @Controller
@@ -24,53 +26,59 @@ public class BoardController {
 	}
 	
 	
-	@GetMapping("brd/list")
-	public String list(Model model) {  // Model은 forward할 속성(Attribute)을 저장할 때 사용한다.
-		model.addAttribute("boards", boardService.findAllBoards());
-		return "board/list";  // board 폴더의 list.jsp로 forward
+	@GetMapping("/brd/list")
+	public String list(Model model) {
+		model.addAttribute("boards", boardService.getBoardList());
+		return "board/list";
 	}
 	
 	
-	@GetMapping("brd/write")
+	@GetMapping("/brd/write")
 	public String write() {
-		return "board/write";  // board 폴더의 write.jsp로 forward
+		return "board/write";
 	}
 	
 	
-	@PostMapping("brd/add")
-	public String add(BoardDTO board) {
-		boardService.saveBoard(board);  // saveBoard()로부터 0/1이 반환되지만 처리하지 않았다.
-		return "redirect:/brd/list";
+	@PostMapping("/brd/add")
+	public void add(HttpServletRequest request, HttpServletResponse response) {
+		// addBoard() 메소드에 list.jsp로 redirect하는 코드가 있기 때문에 return 없이 void 처리합니다.
+		boardService.addBoard(request, response);
 	}	
 	
 	
-	@GetMapping("brd/detail")
+	@GetMapping("/brd/detail")
 	public String detail(@RequestParam(value="boardNo", required=false, defaultValue="0") int boardNo
 			           , Model model) {
-		model.addAttribute("board", boardService.findBoardByNo(boardNo));
-		return "board/detail";  // board 폴더의 detail.jsp로 forward 
+		model.addAttribute("board", boardService.getBoardByNo(boardNo));
+		return "board/detail"; 
 	}
 	
 	
-	@PostMapping("brd/edit")
-	public String edit(int boardNo
+	@PostMapping("/brd/edit")
+	public String edit(@RequestParam(value="boardNo", required=false, defaultValue="0") int boardNo
 			         , Model model) {
-		model.addAttribute("board", boardService.findBoardByNo(boardNo));
-		return "board/edit";  // board 폴더의 edit.jsp로 forward 
+		model.addAttribute("board", boardService.getBoardByNo(boardNo));
+		return "board/edit"; 
 	}
 	
 	
-	@PostMapping("brd/modify")
-	public String modify(BoardDTO board) {
-		boardService.modifyBoard(board);  // modifyBoard()로부터 0/1이 반환되지만 처리하지 않았다.
-		return "redirect:/brd/detail?boardNo=" + board.getBoardNo();
+	@PostMapping("/brd/modify")
+	public void modify(HttpServletRequest request, HttpServletResponse response) {
+		// modifyBoard() 메소드에 detail.jsp로 redirect하는 코드가 있기 때문에 return 없이 void 처리합니다.
+		boardService.modifyBoard(request, response);
 	}
 	
 	
-	@PostMapping("brd/remove")
-	public String remove(int boardNo) {
-		boardService.removeBoard(boardNo);  // removeBoard()로부터 0/1이 반환되지만 처리하지 않았다.
-		return "redirect:/brd/list";
+	@PostMapping("/brd/remove")
+	public void remove(HttpServletRequest request, HttpServletResponse response) {
+		// removeBoard() 메소드에 list.jsp로 redirect하는 코드가 있기 때문에 return 없이 void 처리합니다.
+		boardService.removeBoard(request, response);
+	}
+	
+	@PostMapping("/brd/remove/list")
+	public void removeList(HttpServletRequest request, HttpServletResponse response) {
+		// removeBoardList() 메소드에 list.jsp로 redirect하는 코드가 있기 때문에 return 없이 void 처리합니다.
+		boardService.removeBoardList(request, response);
 	}
 	
 }

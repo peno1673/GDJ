@@ -6,12 +6,10 @@
 
 <configuration>
 
-	<!-- snake_case(DB) to camelCase(Java) -->
 	<settings>
 		<setting name="mapUnderscoreToCamelCase" value="true"/>
 	</settings>
 	
-	<!-- com.gdu.app09.domain.BoardDTO to Board -->
 	<typeAliases>
 		<typeAlias type="com.gdu.app10.domain.BoardDTO" alias="Board" />
 	</typeAliases>

@@ -9,7 +9,8 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
-<script src="${contextPath}/resources/js/moment-with-locales.js"></script>
+<script src="${contextPath}/resources/js/moment-with-locales.min.js"></script>
+<%-- <script src="${contextPath}/resources/js/moment-with-locales.js"></script> --%>
 <script
 	src="${contextPath}/resources/summernote-0.8.18-dist/summernote-lite.js"></script>
 <script
@@ -21,10 +22,9 @@
 	href="${contextPath}/resources/fullcalendar/lib/main.css" />
 <link rel='stylesheet'
 	href="${contextPath}/resources/css/fullcalendar.css">
-
-
 <script src="${contextPath}/resources/fullcalendar/lib/main.js"></script>
 <script src='${contextPath}/resources/fullcalendar/lib/locales-all.js'></script>
+
 <!-- <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'> -->
 <script>
@@ -45,6 +45,10 @@ $(function () {
 	    navLinks: true,
 	    height: 700,
 	    aspectRatio: 0.3,
+	    
+	    
+	    
+	    
 	    eventAdd: function (obj) {
 	      // 이벤트가 추가되면 발생하는 이벤트
 	      console.log(obj);
@@ -59,16 +63,17 @@ $(function () {
 	      console.log(obj);
 	    },
 	   
-	    eventTimeFormat : {
+	   /*  eventTimeFormat : {
 	        year: 'numeric',
 	    	month: '2-digit',
 	        day: '2-digit',
 	        weekday: 'long',
 	        hour : '2-digit',
 	        minute : '2-digit',
-	    },
+	    }, */
 	    
-
+	   /*  eventTimeFormat : 'yyyy-MM-dd a HH:mm', */
+	 	/* titleFormat: 'dddd, MMMM D, YYYY', */
 	    //헤더
 	    headerToolbar: {
 	      start: 'title',
@@ -113,7 +118,7 @@ $(function () {
 	      },
 	    ],
 	    
-	    eventDrop: function (info){
+	    /* eventDrop: function (info){
             console.log(info);
             if(confirm("'"+ info.event.title +"' 매니저의 일정을 수정하시겠습니까 ?")){
             }
@@ -124,8 +129,6 @@ $(function () {
             obj.title = info.event._def.title;
             obj.start = info.event._instance.range.startStr;
             obj.end = info.event._instance.range.endStr;
-            
-            
             events.push(obj);
 
             //console.log(events);
@@ -141,23 +144,26 @@ $(function () {
                     contentType: 'application/json',
                 })
             })
-        },
+        }, */
 	    
 		select : function (addCalendar) { // 캘린더에서 이벤트를 생성할 수 있다.
-	    	let title = prompt('일정을 입력해주세요.');
-	        	if (title) {
+			const begin = moment(addCalendar.startStr).format('YYYY-MM-DD a HH:mm') ;
+			const finish = moment(addCalendar.endStr).format('YYYY-MM-DD a HH:mm') ;
+			window.open('${contextPath}/schedule?start=' + begin + '&end=' + finish ,'일정 입력페이지','width=500,height=600,location=no');
+	        		console.log('---add------');
+	        		console.log(addCalendar);
 	            	calendar.addEvent({
-	                	title: title,
+	                	/* title: title, */
 	                	start: addCalendar.start,
 	                	end: addCalendar.end,
 	                	allDay: addCalendar.allDay,
 	             	 })
-	          	}
 		 }, 
 	    
 	  });
 	  calendar.render();
 	});
+	
 
 </script>
 </head>

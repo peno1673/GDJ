@@ -72,12 +72,12 @@
 		
 	}  // fn_idCheck
 	
-	// 2. 패스워드
+	// 2. 비밀번호
 	function fn_pwCheck(){
 		
 		$('#pw').keyup(function(){
 			
-			// 입력한 패스워드
+			// 입력한 비밀번호
 			let pwValue = $(this).val();
 			
 			// 정규식(8~20자, 소문자+대문자+숫자+특수문자8종(!@#$%^&*) 3개 이상 조합)
@@ -102,15 +102,15 @@
 		
 	}  // fn_pwCheck
 	
-	// 3. 패스워드 확인
+	// 3. 비밀번호 확인
 	function fn_pwCheckAgain(){
 		
 		$('#re_pw').keyup(function(){
 			
-			// 입력한 패스워드 확인
+			// 입력한 비밀번호 확인
 			let rePwValue = $(this).val();
 			
-			// 패스워드와 패스워드 재입력 검사
+			// 비밀번호와 비밀번호 재입력 검사
 			if(rePwValue != '' && rePwValue != $('#pw').val()){
 				$('#msg_re_pw').text('비밀번호를 확인하세요.');
 				rePwPass = false;
@@ -295,6 +295,7 @@
 				});  // ajax
 				
 			}).catch(function(code){  // 인수 1 또는 2를 전달받기 위한 파라미터 code 선언
+
 				switch(code){
 				case 1:
 					$('#msg_email').text('이메일 형식이 올바르지 않습니다.');
@@ -375,16 +376,16 @@
 				<span id="msg_id"></span>
 			</div>
 			
-			<!-- 패스워드 -->
+			<!-- 비밀번호 -->
 			<div>
-				<label for="pw">패스워드*</label>
+				<label for="pw">비밀번호*</label>
 				<input type="password" name="pw" id="pw">
 				<span id="msg_pw"></span>
 			</div>
 			
-			<!-- 패스워드 재확인 -->
+			<!-- 비밀번호 재확인 -->
 			<div>
-				<label for="re_pw">패스워드 확인*</label>
+				<label for="re_pw">비밀번호 확인*</label>
 				<input type="password" id="re_pw">
 				<span id="msg_re_pw"></span>
 			</div>
@@ -397,12 +398,13 @@
 			
 			<!-- 성별 -->
 			<div>
-				<label for="none">선택 안함</label>
+				<span>성별*</span>
 				<input type="radio" name="gender" id="none" value="NO" checked="checked">
-				<label for="male">남자</label>
+				<label for="none">선택 안함</label>
 				<input type="radio" name="gender" id="male" value="M">
-				<label for="female">여자</label>
+				<label for="male">남자</label>
 				<input type="radio" name="gender" id="female" value="F">
+				<label for="female">여자</label>
 			</div>
 		
 			<!-- 휴대전화 -->
@@ -422,13 +424,13 @@
 			
 			<!-- 주소 -->
 			<div>
-				<input type="text" name="postcode"  onclick="fn_execDaumPostcode()" id="postcode" placeholder="우편번호">
+				<input type="text" onclick="fn_execDaumPostcode()" name="postcode" id="postcode" placeholder="우편번호" readonly="readonly">
 				<input type="button" onclick="fn_execDaumPostcode()" value="우편번호 찾기"><br>
-				<input type="text" name="roadAddress" id="roadAddress" placeholder="도로명주소" readonly>
-				<input type="text" name="jibunAddress" id="jibunAddress" placeholder="지번주소" readonly><br>
+				<input type="text" name="roadAddress" id="roadAddress" placeholder="도로명주소"  readonly="readonly">
+				<input type="text" name="jibunAddress" id="jibunAddress" placeholder="지번주소"  readonly="readonly"><br>
 				<span id="guide" style="color:#999;display:none"></span>
 				<input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소">
-				<input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목" readonly>
+				<input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목" readonly="readonly">
 				<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 				<script>
 				    //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.

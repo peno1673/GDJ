@@ -11,5 +11,5 @@ public interface BoardService {
 	public int saveBoard(BoardDTO board);
 	public int modifyBoard(BoardDTO board);
 	public int removeBoard(int board_no);
-	public void testTransaction();
+	public void testTx();
 }

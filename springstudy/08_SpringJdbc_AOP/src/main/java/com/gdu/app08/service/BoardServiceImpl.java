@@ -40,7 +40,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	@Override
-	public void testTransaction() {
+	public void testTx() {
 		
 		// 트랜잭션은 언제 필요한가요?
 		// 하나의 서비스에서 2개 이상의 INSERT/UPDATE/DELETE가 호출되는 경우에 필요합니다.

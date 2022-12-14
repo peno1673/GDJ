@@ -13,10 +13,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.gdu.app14.domain.UploadDTO;
 
 public interface UploadService {
-	
 	public List<UploadDTO> getUploadList();
 	public void save(MultipartHttpServletRequest multipartRequest, HttpServletResponse response);
 	public void getUploadByNo(int uploadNo, Model model);
+	public ResponseEntity<byte[]> display(int attachNo);
 	public ResponseEntity<Resource> download(String userAgent, int attachNo);
 	public ResponseEntity<Resource> downloadAll(String userAgent, int uploadNo);
 	public void modifyUpload(MultipartHttpServletRequest multipartRequest, HttpServletResponse response);

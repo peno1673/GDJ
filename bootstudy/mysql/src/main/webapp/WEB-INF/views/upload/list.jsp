@@ -38,14 +38,14 @@
 						</tr>
 					</c:forEach>
 				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="4">
+							${paging}
+						</td>
+					</tr>
+				</tfoot>
 			</table>
-			<tfoot>
-				<tr>
-					<td colspan="4">
-						${paging}
-					</td>
-				</tr>
-			</tfoot>
 		</div>
 		
 	</div>

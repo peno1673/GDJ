@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.gdu.app15.domain.BlogDTO;
 import com.gdu.app15.service.BlogService;
 
 @Controller
@@ -28,6 +27,11 @@ public class BlogController {
 		return "index";
 	}
 	
+	@GetMapping("/view/popup")
+	public String popup() {
+		return "popup/popup";
+	}	
+	
 	@GetMapping("/blog/list")
 	public String list(HttpServletRequest request, Model model) {
 		model.addAttribute("request", request);  // model에 request를 저장하기
@@ -40,30 +44,30 @@ public class BlogController {
 		return "blog/write";
 	}
 	
-	@PostMapping("/blog/add")
-	public void add(HttpServletRequest request, HttpServletResponse response) {
-		blogService.saveBlog(request, response);
-	}
-	
 	@ResponseBody
 	@PostMapping(value="/blog/uploadImage", produces="application/json")
 	public Map<String, Object> uploadImage(MultipartHttpServletRequest multipartRequest) {
 		return blogService.saveSummernoteImage(multipartRequest);
 	}
 	
+	@PostMapping("/blog/add")
+	public void add(HttpServletRequest request, HttpServletResponse response) {
+		blogService.saveBlog(request, response);
+	}
 	
-	@GetMapping("/blog/increase/hit")
-	public String increaseHit(@RequestParam(value="blogNo", required = false, defaultValue = "0")int blogNo) {
-		int result = blogService.increaseBlogHit(blogNo);
-		if (result > 0 ) {
+	@GetMapping("/blog/increse/hit")
+	public String increseHit(@RequestParam(value="blogNo", required=false, defaultValue="0") int blogNo) {
+		int result = blogService.increseBlogHit(blogNo);
+		if(result > 0) {  // 조회수 증가에 성공하면 상세보기로 이동
 			return "redirect:/blog/detail?blogNo=" + blogNo;
-		} else {
+		} else {          // 조회수 증가에 실패하면 목록보기로 이동
 			return "redirect:/blog/list";
 		}
 	}
+	
 	@GetMapping("/blog/detail")
-	public String detail(@RequestParam(value="blogNo", required = false, defaultValue = "0")int blogNo , Model model) {
-		model.addAttribute("blog" , blogService.getBlogByNo(blogNo));
+	public String detail(@RequestParam(value="blogNo", required=false, defaultValue="0") int blogNo, Model model) {
+		model.addAttribute("blog", blogService.getBlogByNo(blogNo));
 		return "blog/detail";
 	}
 	
@@ -74,25 +78,13 @@ public class BlogController {
 	}
 	
 	@PostMapping("/blog/modify")
-	public String modify(HttpServletRequest request, HttpServletResponse response) {		
+	public void modify(HttpServletRequest request, HttpServletResponse response) {
 		blogService.modifyBlog(request, response);
-		return "redirect:/blog/list";
 	}
 	
 	@PostMapping("/blog/remove")
-	public String remove(HttpServletRequest request, HttpServletResponse response) {		
+	public void remove(HttpServletRequest request, HttpServletResponse response) {
 		blogService.removeBlog(request, response);
-		return "redirect:/blog/list";
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

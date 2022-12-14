@@ -11,6 +11,8 @@
 <body>
 
 	<a href="${contextPath}/member/handle">회원</a>
+	<br>
+	<a href="${contextPath}/upload/handle">업로드</a>
 
 </body>
 </html>

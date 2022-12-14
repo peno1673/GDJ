@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 public interface UploadService {
-	public void getUploadList(HttpServletRequest request,Model model);
+	public void getUploadList(HttpServletRequest request, Model model);
 	public void save(MultipartHttpServletRequest multipartRequest, HttpServletResponse response);
 	public void getUploadByNo(int uploadNo, Model model);
 	public ResponseEntity<byte[]> display(int attachNo);

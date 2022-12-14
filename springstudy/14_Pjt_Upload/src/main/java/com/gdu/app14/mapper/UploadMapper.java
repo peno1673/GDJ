@@ -9,7 +9,6 @@ import com.gdu.app14.domain.UploadDTO;
 
 @Mapper
 public interface UploadMapper {
-	
 	public List<UploadDTO> selectUploadList();
 	public int insertUpload(UploadDTO upload);
 	public int insertAttach(AttachDTO attach);
@@ -21,5 +20,4 @@ public interface UploadMapper {
 	public int deleteAttach(int attachNo);
 	public int deleteUpload(int uploadNo);
 	public List<AttachDTO> selectAttachListInYesterday();
-	
 }
