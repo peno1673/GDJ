@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SharegramApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void 제이슨테스트() {
+		
 	}
 
 }
