@@ -40,7 +40,7 @@
 					if(resData.insertResult > 0 ){
 						alert('일정이 등록되었습니다');
 					/* 	$(opener.location).attr('href','javascript:fn_fullcalendar()');  */
-					opener.parent.location.reload();
+					/* opener.parent.location.reload(); */
 						window.close();
 					} else {
 						alert('일정이 등록되지 않았습니다');

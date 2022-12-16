@@ -10,7 +10,12 @@
 <title>Insert title here</title>
 <script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
 <script src="${contextPath}/resources/js/moment-with-locales.min.js"></script>
+
 <%-- <script src="${contextPath}/resources/js/moment-with-locales.js"></script> --%>
+
+<script src='${contextPath}/resources/bootstrap-5.2.2-dist/js/bootstrap.bundle.min.js'></script> 
+
+
 <script
 	src="${contextPath}/resources/summernote-0.8.18-dist/summernote-lite.js"></script>
 <script
@@ -21,16 +26,24 @@
 <link rel='stylesheet'
 	href="${contextPath}/resources/fullcalendar/lib/main.css" />
 <link rel='stylesheet'
-	href="${contextPath}/resources/css/fullcalendar.css">
+	href="${contextPath}/resources/css/fullcalendar.css">	
+	
 <script src="${contextPath}/resources/fullcalendar/lib/main.js"></script>
 <script src='${contextPath}/resources/fullcalendar/lib/locales-all.js'></script>
 
+
+<style>
+	.show-modal {
+  display: block;
+}
+</style>
 <!-- <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'> -->
 <script>
 
 	$(function () {
 		fn_fullcalendar();
+		/* fn_modal(); */
 	});
 	
 	
@@ -159,6 +172,17 @@
 				const begin = moment(addInfo.start).format('YYYY-MM-DD HH:mm') ;
 				const finish = moment(addInfo.end).format('YYYY-MM-DD HH:mm') ;
 				const allDay = addInfo.allDay;
+				/* $.ajax({
+					type : 'get',
+					url : '${contextPath}/schedule/write?start=' + begin + '&end=' + finish +'&allday=' + allDay ,
+					dataType : 'html',
+					success : function (resData){
+						console.log(resData)
+						 $("div").html(resData); 
+					}
+					
+				}) */
+				
 				window.open('${contextPath}/schedule/write?start=' + begin + '&end=' + finish +'&allday=' + allDay ,'일정 입력페이지','width=500,height=600');
 		            	calendar.addEvent({
 		                	start: addInfo.start,
@@ -256,16 +280,16 @@
 	}
 	
 
-	
-	
-	
-	
 
 </script>
+
+
+
 </head>
 <body>
-
-	<div id='calendar'></div>
+<div id='calendar'></div>
+<!-- Button trigger modal -->
+<!-- <a href="javascript:openModal('modal1');" class="button modal-open">모달열기1</a> -->
 
 </body>
 </html>
