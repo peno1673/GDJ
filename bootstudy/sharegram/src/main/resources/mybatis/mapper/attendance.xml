@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.group.sharegram.schedule.mapper.AttendanceMapper">
+	
+	<select id="selectAttendanceCheck" parameterType="AttendanceDTO" resultType="AttendanceDTO">
+		SELECT ATT_STATUS
+    		FROM ATTENDANCE   
+   			 WHERE EMP_NO = #{empNo} AND ATT_START LIKE #{attStart} || '%'
+	</select>
+	
+	
+	<insert id="insertAttendacne" parameterType="AttendanceDTO">
+		INSERT INTO ATTENDANCE
+				(ATT_NO , EMP_NO , ATT_START , ATT_STATUS)
+			VALUES
+				(ATT_SEQ.NEXTVAL, #{empNo}, #{attStart} , #{attStatus})
+	</insert>
+	
+	<update id="updateLeaveWork" parameterMap="AttendanceDTO">
+		UPDATE ATTENDANCE
+    		SET ATT_END = #{attEnd}
+    		WHERE EMP_NO = #{empNo}
+	</update>
+	
+	
+		
+</mapper>

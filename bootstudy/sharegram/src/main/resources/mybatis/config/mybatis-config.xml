@@ -16,7 +16,6 @@
 		<typeAlias type="com.group.sharegram.schedule.domain.EarlyDTO" alias="EarlyDTO" />
 		<typeAlias type="com.group.sharegram.schedule.domain.ScheduleDTO" alias="ScheduleDTO" />
 		<typeAlias type="com.group.sharegram.schedule.domain.VacationDTO" alias="VacationDTO" />
-		
 	</typeAliases>
 
 </configuration>

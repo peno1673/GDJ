@@ -33,9 +33,53 @@
 
 
 <style>
-	.show-modal {
-  display: block;
+/* .modal__background{
+  position: fixed;
+  top:0; left: 0; bottom: 0; right: 0;
+  background: rgba(0, 0, 0, 0.8);
+} */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: none; 
+  background-color: rgba(0, 0, 0, 0.4);
 }
+
+.modal_content{
+  /* background:#fff; 
+  border-radius:10px;
+  position:relative; 
+  width:600px; 
+  height:400px;
+  top:50%; 
+  left:50%;
+  margin-top:-100px; 
+  margin-left:-200px;
+  text-align:center;
+  box-sizing:border-box; 
+  padding:74px 0;
+  line-height:23px; 
+  cursor:pointer; */
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,.3);
+  position: absolute;
+  overflow: hidden;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  width: 400px;
+  animation-name: modalopen;
+  animation-duration: var(--modal-duration);
+}
+
 </style>
 <!-- <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
 <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'> -->
@@ -43,7 +87,7 @@
 
 	$(function () {
 		fn_fullcalendar();
-		/* fn_modal(); */
+		fn_modal();
 	});
 	
 	
@@ -62,6 +106,10 @@
 		    editable: true,
 		    navLinks: true,
 		    dayMaxEvents: true,
+		    
+		    displayEventTime: true,
+		    displayEventEnd:  true,
+		    
 		    height: 700,
 		    aspectRatio: 0.3,
 		    
@@ -93,8 +141,12 @@
 		    //헤더
 		    headerToolbar: {
 		      start: 'title',
-		      center: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek, myCustomButton',
+		      center: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
 		      end: 'today prevYear,prev,next,nextYear',
+		    },
+		    
+		    footerToolbar: {
+		    	start :  'attendance leave',
 		    },
 	
 		    //업무시간
@@ -266,23 +318,95 @@
              },
              
              customButtons: {
-            	    myCustomButton: {
-            	      text: 'custom!',
+            	 attendance: {
+            	      text: '출근',
             	      click: function() {
-            	        alert('clicked the custom button!');
-            	        
+            	        alert('출근');
+            	        $.ajax({
+            	        	type: 'post',
+            				url: '${contextPath}/attendance',
+            				data: 'attendance=' + 1, 
+            				dataType: 'json',
+            				success: function(resData){
+            					console.log(resData)
+            					if(resData.insertAttendacne > 0) {
+            						alert('출근하셨습니다');
+            					} else {
+            						alert('다시 눌러주세요');
+            					}
+            				},
+            				error: function(jqXHR){
+            					alert('이미 출근하셧습니다');
+            					/* alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText); */
+            				}
+            	        })
             	      }
-            	    }
+            	    },
+             	 leave: {
+		       	      text: '퇴근',
+		       	      click: function() {
+		       	        alert('퇴근');
+			       	     $.ajax({
+	         	        	type: 'post',
+	         				url: '${contextPath}/attendance',
+	         				data: 'attendance=' + 2, 
+	         				dataType: 'json',
+	         				success: function(resData){
+	         					console.log(resData)
+	         					if(resData.insertAttendacne > 0) {
+	         						alert('퇴근하셧습니다');
+	         					} else {
+	         						alert('다시 눌러주세요');
+	         					}
+	         				},
+	         				error: function(jqXHR){
+	         					alert('이미 퇴근하셧습니다');
+	         					/* alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText); */
+	         				}
+	         	        })
+       	        
+       	   			 }
+       	   		 },
              },
+             
+          
+            	
+           
 		    
 		  });
 		  calendar.render();
 	}
 	
 
+	function fn_modal(){
+		$('.btn_modal').click(function(){
+			alert('동작');
+			$('.modal').fadeIn();
+		})
+		$('.modal_content').click(function(){
+			alert('동작');
+			$('.modal').fadeOut();
+		})
+		$('#btn_close').click(function(){
+			alert('동작');
+			$('.modal').fadeOut();
+		})
+	}	
 
+	function fn_attendance(){
+		$('#btn_attendance').click(function(){
+			
+		})
+	}
+	
+	function fn_leave(){
+		$('#btn_leave').click(function(){
+			
+		})
+	}
+	
+	
 </script>
-
 
 
 </head>
@@ -290,6 +414,41 @@
 <div id='calendar'></div>
 <!-- Button trigger modal -->
 <!-- <a href="javascript:openModal('modal1');" class="button modal-open">모달열기1</a> -->
+<!-- Modal HTML embedded directly into document -->
+<!-- <div id="ex1" class="modal">
+  <p>Thanks for clicking. That felt good.</p>
+  <a href="#" rel="modal:close">Close</a>
+</div>
 
+Link to open the modal
+<p><a href="#ex1" rel="modal:open">Open Modal</a></p> -->
+
+<div>
+	<button id="btn_attendance">출근</button>
+	<button id="btn_leave">퇴근</button>
+</div>
+
+<%-- <button class="btn_modal">모달버튼</button>
+
+<div class="modal">
+	<div class="modal_content">
+		<input type="hidden" id="allday" value="${allday}">
+		<h1>일정 입력</h1>
+		<div>
+			<label for="title">제목</label> <input type="text" id="title">
+		</div>
+		<div>
+			<label for="start">시작일</label> <input type="text" id="start"
+				value="${start}">
+		</div>
+		<div>
+			<label for="end">종료일</label> <input type="text" id="end"
+				value="${end}">
+		</div>
+		<button id="btn_write">일정 등록</button>
+		<button id="btn_close">취소</button>
+		
+	</div>
+</div> --%>
 </body>
 </html>
