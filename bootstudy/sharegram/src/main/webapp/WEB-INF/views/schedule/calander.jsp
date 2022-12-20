@@ -321,7 +321,6 @@
             	 attendance: {
             	      text: '출근',
             	      click: function() {
-            	        alert('출근');
             	        $.ajax({
             	        	type: 'post',
             				url: '${contextPath}/attendance',
@@ -331,13 +330,12 @@
             					console.log(resData)
             					if(resData.insertAttendacne > 0) {
             						alert('출근하셨습니다');
-            					} else {
-            						alert('다시 눌러주세요');
+            					} else if (resData.alreadyAttendace === 0 ) {
+            						alert('이미 출근하셨습니다');
             					}
             				},
             				error: function(jqXHR){
-            					alert('이미 출근하셧습니다');
-            					/* alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText); */
+            					 alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText); 
             				}
             	        })
             	      }
@@ -345,7 +343,6 @@
              	 leave: {
 		       	      text: '퇴근',
 		       	      click: function() {
-		       	        alert('퇴근');
 			       	     $.ajax({
 	         	        	type: 'post',
 	         				url: '${contextPath}/attendance',
@@ -353,15 +350,19 @@
 	         				dataType: 'json',
 	         				success: function(resData){
 	         					console.log(resData)
-	         					if(resData.insertAttendacne > 0) {
-	         						alert('퇴근하셧습니다');
-	         					} else {
-	         						alert('다시 눌러주세요');
-	         					}
+	         					if(resData.updateLeaveWork > 0) {
+	         						alert('퇴근하셧습니다.');
+	         					} else if (resData.notAttendance === 0){
+	         						alert('출근을 눌러주세요');
+	         					} else if (resData.alreadyLeaveWork === 0){
+	         						alert('이미 퇴근을 누르셨습니다.');
+	         					} 
+	         					
+	         					
+	         					
 	         				},
 	         				error: function(jqXHR){
-	         					alert('이미 퇴근하셧습니다');
-	         					/* alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText); */
+	         					alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText); 
 	         				}
 	         	        })
        	        

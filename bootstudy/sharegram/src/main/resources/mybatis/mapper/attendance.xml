@@ -6,8 +6,58 @@
 
 <mapper namespace="com.group.sharegram.schedule.mapper.AttendanceMapper">
 	
-	<select id="selectAttendanceCheck" parameterType="AttendanceDTO" resultType="AttendanceDTO">
-		SELECT ATT_STATUS
+	<resultMap type="DepartmentsDTO" id="DeptMap">
+		<id column="DEPT_NO" property="deptNo" />
+		<result column="DEPT_NAME" property="deptName" />
+	</resultMap>
+	
+	<resultMap type="PostionDTO" id="PosMap">
+		<id column="JOB_NO" property="jobNo" />
+		<result column="JOB_NAME" property="jobName" />
+	</resultMap>
+	
+	<resultMap type="EmployeesDTO" id="EmpMap">
+		<id column="EMP_NO" property="empNo" />
+		<result column="NAME" property="name" />
+		<result column="JOIN_DATE" property="joinDate" />
+		<collection resultMap="DeptMap" property="depDTO"></collection>
+		<collection resultMap="PosMap" property="posDTO"></collection>
+	</resultMap>
+	
+	<resultMap type="AttendanceDTO" id="AttMap">
+		<id column="ATT_NO" property="attNo" />
+		<result column="ATT_START" property="attStart" />
+		<result column="ATT_END" property="attEnd" />
+		<result column="ATT_STATUS" property="attStatus" />
+		<collection resultMap="EmpMap" property="empDTO"></collection>
+	</resultMap>
+	
+	<select id="selectAttendaceCount" resultType="int">
+		SELECT COUNT(*)
+ 			FROM ATTENDANCE
+	</select>
+	
+	<select id="test" resultMap="AttMap">
+		SELECT D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS
+		    FROM DEPARTMENTS D
+		    INNER JOIN EMPLOYEES E
+		        ON D.DEPT_NO = E.DEPT_NO
+		    INNER JOIN POSITION P
+		        ON P.JOB_NO = E.JOB_NO
+		    INNER JOIN ATTENDANCE A
+		        ON A.EMP_NO = E.EMP_NO
+	</select>
+	
+	<!-- <select id="selectAttendaceListByMap" parameterType="map" resultType="MemberDTO">
+		SELECT A.ROW_NUM, A.MEMBER_NO, A.ID, A.NAME, A.GENDER, A.ADDRESS
+		  FROM (SELECT ROW_NUMBER() OVER(ORDER BY MEMBER_NO DESC) AS ROW_NUM, MEMBER_NO, ID, NAME, GENDER, ADDRESS
+		          FROM MEMBER) A
+		 WHERE A.ROW_NUM BETWEEN #{begin} AND #{end}
+	</select> -->
+			
+	
+	<select id="selectAttendanceCheck" parameterType ="AttendanceDTO" resultType="AttendanceDTO">
+		SELECT ATT_STATUS, ATT_START, ATT_END
     		FROM ATTENDANCE   
    			 WHERE EMP_NO = #{empNo} AND ATT_START LIKE #{attStart} || '%'
 	</select>
@@ -20,7 +70,7 @@
 				(ATT_SEQ.NEXTVAL, #{empNo}, #{attStart} , #{attStatus})
 	</insert>
 	
-	<update id="updateLeaveWork" parameterMap="AttendanceDTO">
+	<update id="updateLeaveWork" parameterType="AttendanceDTO">
 		UPDATE ATTENDANCE
     		SET ATT_END = #{attEnd}
     		WHERE EMP_NO = #{empNo}

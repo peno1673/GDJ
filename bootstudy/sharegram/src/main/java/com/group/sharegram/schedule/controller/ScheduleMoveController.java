@@ -24,4 +24,9 @@ public class ScheduleMoveController {
 		model.addAttribute("allday" , allday);
 	return "schedule/calendarWrite";
 	}
+	
+	@GetMapping(value = "/attendance/list" , produces = "application/json")
+	public String getAttendaceList() {
+		return "schedule/attendance";
+	}
 }

@@ -1,9 +1,11 @@
 package com.group.sharegram.schedule.controller;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,10 +26,12 @@ public class AttendanceController {
 		return attendanceService.addAttendance(attendance , empNo);
 	}
 	
-	/*
-	 * @PutMapping(value="/attendance", produces = "application/json") public
-	 * ResponseEntity<Object> leaveWork(@PathVariable(value="leave", required=false)
-	 * Optional<String> opt) { int leave = Integer.parseInt(opt.orElse("0")); return
-	 * attendanceService.addAttendance(leave); }
-	 */
+	@GetMapping(value="/attendance", produces="application/json")
+	public ResponseEntity<Object> getMemberList(@PathVariable(value="page", required=false) Optional<String> opt) {
+		/* int page = Integer.parseInt(opt.orElse("1")); */
+		
+		return attendanceService.getAttendanceList();
+	}
+	
+	
 }
