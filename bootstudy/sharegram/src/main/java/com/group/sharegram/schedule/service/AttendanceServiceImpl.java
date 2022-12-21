@@ -1,12 +1,16 @@
 package com.group.sharegram.schedule.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,15 +21,19 @@ import com.group.sharegram.schedule.domain.AttendanceDTO;
 import com.group.sharegram.schedule.domain.EarlyDTO;
 import com.group.sharegram.schedule.mapper.AttendanceMapper;
 import com.group.sharegram.schedule.mapper.EarlyMapper;
+import com.group.sharegram.util.PageUtil;
+
+import ch.qos.logback.core.recovery.ResilientSyslogOutputStream;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
 	@Autowired
 	private AttendanceMapper attendanceMapper;
-
 	@Autowired
 	private EarlyMapper earlyMapper;
+	@Autowired
+	private PageUtil pageUtil;
 
 	@Override
 	public Map<String, String> attendanceCheck(int empNo) {
@@ -33,7 +41,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 		LocalDate now = LocalDate.now();
 		String attStart = now.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
 		AttendanceDTO attendanceDTO = AttendanceDTO.builder().empNo(empNo).attStart(attStart).build();
+
 		AttendanceDTO result = attendanceMapper.selectAttendanceCheck(attendanceDTO);
+		System.out.println(" result : " + result);
+
 		String opt = Optional.ofNullable(result).map(AttendanceDTO::getAttStatus).orElse("null");
 		String opt2 = Optional.ofNullable(result).map(AttendanceDTO::getAttEnd).orElse("null");
 		String opt3 = Optional.ofNullable(result).map(AttendanceDTO::getAttStart).orElse("null");
@@ -60,7 +71,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		System.out.println("AttStart  " + attCheck.get("attStart"));
 		System.out.println("AttEnd  " + attCheck.get("attEnd"));
 		System.out.println("-----");
-		
+
 		// isCheck가 false (비어있다==null 출퇴근 기록이없다) 출근을 한다
 		if (attendance == 1 && attCheck.get("attStatus").contains("null")) {
 
@@ -88,10 +99,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 			result.put("insertAttendacne", insertAttendacne);
 			return new ResponseEntity<Object>(result, HttpStatus.OK);
 
-			//출근하고 퇴근체크
-		} else if (attendance == 2 
-				&& attCheck.get("attEnd").contains("null") && (attCheck.get("attStatus").contains("정상 출근")
-						|| attCheck.get("attStatus").contains("지각")) ) {
+			// 출근하고 퇴근체크
+		} else if (attendance == 2 && attCheck.get("attEnd").contains("null")
+				&& (attCheck.get("attStatus").contains("정상 출근") || attCheck.get("attStatus").contains("지각"))) {
 			System.err.println("퇴근 왜돼?");
 			LocalDateTime now = LocalDateTime.now();
 			String attEnd = now.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"));
@@ -111,7 +121,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 				earlyMapper.insertEarly(earlyDTO);
 			}
 
-			AttendanceDTO attendanceDTO = AttendanceDTO.builder().empNo(1).attEnd(attEnd).attStatus(attStatus).build();
+			AttendanceDTO attendanceDTO = AttendanceDTO.builder().empNo(1).attStart(attCheck.get("attStart"))
+					.attEnd(attEnd).attStatus(attStatus).build();
 
 			int updateLeaveWork = attendanceMapper.updateLeaveWork(attendanceDTO);
 			Map<String, Object> result = new HashMap<String, Object>();
@@ -119,38 +130,83 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 			return new ResponseEntity<Object>(result, HttpStatus.OK);
 
-			
-			//출근 누르기전에 퇴근 누를경우
+			// 출근 누르기전에 퇴근 누를경우
 		} else if (attendance == 2 && attCheck.get("attStatus").contains("null")) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("notAttendance", 0);
 			return new ResponseEntity<Object>(result, HttpStatus.OK);
-			
-			//출근 누르고 출근 눌렀을경우
+
+			// 출근 누르고 출근 눌렀을경우
 		} else if (attendance == 1 && attCheck.get("attStart") != null) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("alreadyAttendace", 0);
 			return new ResponseEntity<Object>(result, HttpStatus.OK);
-			
-			//퇴근누르고 퇴근 누를경우
+
+			// 퇴근누르고 퇴근 누를경우
 		} else if (attendance == 2 && attCheck.get("attEnd") != null) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("alreadyLeaveWork", 0);
 			return new ResponseEntity<Object>(result, HttpStatus.OK);
-			
-			
+
 		} else {
 			return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
 		}
 
 	}
-	
+
+	@SuppressWarnings("null")
 	@Override
-	public ResponseEntity<Object> getAttendanceList() {
-		Map<String , Object > map = new HashMap<>();
-		map.put("list", attendanceMapper.test());
-		return new ResponseEntity<Object>(map, HttpStatus.OK);
+	public ResponseEntity<Object> getAttendanceList(int page) {
+
+		int totalRecord = attendanceMapper.selectAttendaceCount();
+		pageUtil.setPageUtil(page, totalRecord);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("begin", pageUtil.getBegin());
+		map.put("end", 10);
+		System.out.println("map : " + map);
+
+		List<AttendanceDTO> attendances = attendanceMapper.selectAttendanceListByMap(map);
+
+		List<LocalDateTime> startTime =	attendances.stream().map(AttendanceDTO::getAttStart)
+			.map(AttStart -> LocalDateTime.parse( AttStart, DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"))).collect(Collectors.toList());
+		List<LocalDateTime> endTime =	attendances.stream().map(AttendanceDTO::getAttEnd)
+			.map(AttEnd -> LocalDateTime.parse( AttEnd, DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"))).collect(Collectors.toList());
+		
+		List<String> working = new ArrayList<>();
+		List<String> overWorking = new ArrayList<>();
+		for(int i = 0; i <startTime.size() ; i++) {
+			LocalDateTime compare = LocalDateTime.of(2000, 01, 01, 01, 01);
+			if(compare.isEqual(endTime.get(i)) == false) {
+				Duration workTime = Duration.between(startTime.get(i), endTime.get(i));
+				long totalMinute = workTime.toMinutes()-60; //480분
+				long hour = totalMinute / 60;
+				long minute = totalMinute % 60; // 60분 못 넘김
+				working.add(Long.toString(hour) + "시 " + Long.toString(minute)  + "분");
+				if( totalMinute > 480 ){
+					long totalOverWork = totalMinute -480;
+					long OverWorkhour = totalOverWork / 60;
+					long OverWorkminute = totalOverWork % 60 ;
+					overWorking.add(Long.toString(OverWorkhour) + "시 " + Long.toString(OverWorkminute)  + "분");
+				} 
+				
+				
+			}
+		}
+		working.stream().forEach(System.out::println);
+		overWorking.stream().forEach(System.out::println);
+
+		Map<String, Object> list = new HashMap<String, Object>();
+		list.put("attendances", attendances);
+		list.put("working", working);
+		list.put("overWorking", overWorking);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("attendanceList", list);
+		result.put("PageUtil", pageUtil);
+
+		System.out.println("result : " + result);
+		return new ResponseEntity<Object>(result, HttpStatus.OK);
 	}
-	
-	
+
 }

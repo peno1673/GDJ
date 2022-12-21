@@ -1,6 +1,7 @@
 package com.group.sharegram.schedule.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,5 +13,7 @@ public interface AttendanceMapper {
 	public int insertAttendacne(AttendanceDTO attendacne);
 	public int updateLeaveWork(AttendanceDTO attendacne);
 	public AttendanceDTO selectAttendanceCheck(AttendanceDTO attendacne);
-	public List<AttendanceDTO> test();
+	
+	public List<AttendanceDTO> selectAttendanceListByMap(Map<String, Object> map);
+	public int selectAttendaceCount();
 }

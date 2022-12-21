@@ -37,15 +37,17 @@
  			FROM ATTENDANCE
 	</select>
 	
-	<select id="test" resultMap="AttMap">
-		SELECT D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS
-		    FROM DEPARTMENTS D
-		    INNER JOIN EMPLOYEES E
-		        ON D.DEPT_NO = E.DEPT_NO
-		    INNER JOIN POSITION P
-		        ON P.JOB_NO = E.JOB_NO
-		    INNER JOIN ATTENDANCE A
-		        ON A.EMP_NO = E.EMP_NO
+	<select id="selectAttendanceListByMap" parameterType="map" resultMap="AttMap">
+		SELECT A.ROW_NUM, A.DEPT_NAME, A.JOB_NAME, A.EMP_NO, A.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS
+		    FROM (SELECT ROW_NUMBER() OVER(ORDER BY E.EMP_NO DESC) AS ROW_NUM, D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS
+		            FROM DEPARTMENTS D
+		            INNER JOIN EMPLOYEES E
+		                ON D.DEPT_NO = E.DEPT_NO
+		            INNER JOIN POSITION P
+		                ON P.JOB_NO = E.JOB_NO
+		            INNER JOIN ATTENDANCE A
+		                ON A.EMP_NO = E.EMP_NO) A
+		    WHERE A.ROW_NUM BETWEEN #{begin} AND #{end}
 	</select>
 	
 	<!-- <select id="selectAttendaceListByMap" parameterType="map" resultType="MemberDTO">
@@ -73,7 +75,7 @@
 	<update id="updateLeaveWork" parameterType="AttendanceDTO">
 		UPDATE ATTENDANCE
     		SET ATT_END = #{attEnd}
-    		WHERE EMP_NO = #{empNo}
+    		WHERE EMP_NO = #{empNo} AND ATT_START LIKE #{attStart} || '%'
 	</update>
 	
 	

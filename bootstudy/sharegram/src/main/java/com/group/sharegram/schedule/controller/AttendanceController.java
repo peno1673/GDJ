@@ -27,10 +27,10 @@ public class AttendanceController {
 	}
 	
 	@GetMapping(value="/attendance", produces="application/json")
-	public ResponseEntity<Object> getMemberList(@PathVariable(value="page", required=false) Optional<String> opt) {
-		/* int page = Integer.parseInt(opt.orElse("1")); */
+	public ResponseEntity<Object> getAttendanceList(@PathVariable(value="page", required=false) Optional<String> opt) {
+		int page = Integer.parseInt(opt.orElse("1")); 
 		
-		return attendanceService.getAttendanceList();
+		return attendanceService.getAttendanceList(page);
 	}
 	
 	
