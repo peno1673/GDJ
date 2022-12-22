@@ -11,8 +11,6 @@
 <script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
 <script src="${contextPath}/resources/js/moment-with-locales.min.js"></script>
 
-<%-- <script src="${contextPath}/resources/js/moment-with-locales.js"></script> --%>
-
 <script src='${contextPath}/resources/bootstrap-5.2.2-dist/js/bootstrap.bundle.min.js'></script> 
 
 
@@ -33,61 +31,16 @@
 
 
 <style>
-/* .modal__background{
-  position: fixed;
-  top:0; left: 0; bottom: 0; right: 0;
-  background: rgba(0, 0, 0, 0.8);
-} */
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  display: none; 
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal_content{
-  /* background:#fff; 
-  border-radius:10px;
-  position:relative; 
-  width:600px; 
-  height:400px;
-  top:50%; 
-  left:50%;
-  margin-top:-100px; 
-  margin-left:-200px;
-  text-align:center;
-  box-sizing:border-box; 
-  padding:74px 0;
-  line-height:23px; 
-  cursor:pointer; */
-  background: white;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,.3);
-  position: absolute;
-  overflow: hidden;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 100%;
-  width: 400px;
-  animation-name: modalopen;
-  animation-duration: var(--modal-duration);
-}
+.blind {
+		display: none;
+	}
 
 </style>
-<!-- <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
-<link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'> -->
 <script>
 
 	$(function () {
 		fn_fullcalendar();
-		fn_modal();
+		fn_write();
 	});
 	
 	
@@ -106,12 +59,12 @@
 		    editable: true,
 		    navLinks: true,
 		    dayMaxEvents: true,
-		    
 		    displayEventTime: true,
 		    displayEventEnd:  true,
 		    
-		    height: 700,
-		    aspectRatio: 0.3,
+		    height: 900,
+		    weight: 400,
+		    aspectRatio: 0.01,
 		    
 		    /* eventAdd: function (obj) {
 		      // 이벤트가 추가되면 발생하는 이벤트
@@ -146,7 +99,7 @@
 		    },
 		    
 		    footerToolbar: {
-		    	start :  'attendance leave',
+		    	start :  'attendance leave write',
 		    },
 	
 		    //업무시간
@@ -156,10 +109,7 @@
 		      endTime: '18:00',
 		    },
 	
-		    // 날짜 클릭시 데이트 반환 나중에 지우기
-		    dateClick: function (info) {
-		      alert('Date: ' + info.dateStr);
-		    },
+		 
 	
 		   
 		    navLinkDayClick: function (date, jsEvent) {
@@ -318,6 +268,42 @@
              },
              
              customButtons: {
+            	 
+            	 write :{
+            		text : '일정입력',
+            		click: function(){
+            			let schedule = JSON.stringify({
+            				'scheduleTitle' : $('#title').val(),
+            				'scheduleStart' : $('#start').val(),
+            				'scheduleEnd' : $('#end').val(),
+            				'scheduleAllday' : $('#allday').val(),
+            			});
+            			$.ajax({
+            				type : 'post',
+            				url : '${contextPath}/schedule',
+            				data : schedule,
+            				contentType : 'application/json',
+            				
+            				dataType: 'json',
+            				success : function(resData) {
+            					if(resData.insertResult > 0 ){
+            						alert('일정이 등록되었습니다');
+            					/* 	$(opener.location).attr('href','javascript:fn_fullcalendar()');  */
+            					/* opener.parent.location.reload(); */
+            						window.close();
+            					} else {
+            						alert('일정이 등록되지 않았습니다');
+            					}
+            					
+            				},
+            				error : function(jqXHR) {
+            					alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText);
+            					window.close();
+            				}
+            			}) 
+            		}
+            	 },
+            	 
             	 attendance: {
             	      text: '출근',
             	      click: function() {
@@ -379,30 +365,10 @@
 	}
 	
 
-	function fn_modal(){
-		$('.btn_modal').click(function(){
-			alert('동작');
-			$('.modal').fadeIn();
-		})
-		$('.modal_content').click(function(){
-			alert('동작');
-			$('.modal').fadeOut();
-		})
-		$('#btn_close').click(function(){
-			alert('동작');
-			$('.modal').fadeOut();
-		})
-	}	
-
-	function fn_attendance(){
-		$('#btn_attendance').click(function(){
-			
-		})
-	}
-	
-	function fn_leave(){
-		$('#btn_leave').click(function(){
-			
+	function fn_write(){
+		$('#btn_write').click(function(){
+			console.log(  $(this).next().toggleClass('blind')  );
+			/* $(this).nextSibling.toggleClass('blind'); */
 		})
 	}
 	
@@ -413,26 +379,11 @@
 </head>
 <body>
 <div id='calendar'></div>
-<!-- Button trigger modal -->
-<!-- <a href="javascript:openModal('modal1');" class="button modal-open">모달열기1</a> -->
-<!-- Modal HTML embedded directly into document -->
-<!-- <div id="ex1" class="modal">
-  <p>Thanks for clicking. That felt good.</p>
-  <a href="#" rel="modal:close">Close</a>
-</div>
 
-Link to open the modal
-<p><a href="#ex1" rel="modal:open">Open Modal</a></p> -->
 
-<div>
-	<button id="btn_attendance">출근</button>
-	<button id="btn_leave">퇴근</button>
-</div>
 
-<%-- <button class="btn_modal">모달버튼</button>
-
-<div class="modal">
-	<div class="modal_content">
+<button id="btn_write">입력 버튼</button>
+<div class="blind">
 		<input type="hidden" id="allday" value="${allday}">
 		<h1>일정 입력</h1>
 		<div>
@@ -448,8 +399,7 @@ Link to open the modal
 		</div>
 		<button id="btn_write">일정 등록</button>
 		<button id="btn_close">취소</button>
-		
-	</div>
-</div> --%>
+</div>
+
 </body>
 </html>

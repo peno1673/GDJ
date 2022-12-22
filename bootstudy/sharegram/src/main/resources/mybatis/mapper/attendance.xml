@@ -38,16 +38,16 @@
 	</select>
 	
 	<select id="selectAttendanceListByMap" parameterType="map" resultMap="AttMap">
-		SELECT A.ROW_NUM, A.DEPT_NAME, A.JOB_NAME, A.EMP_NO, A.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS
-		    FROM (SELECT ROW_NUMBER() OVER(ORDER BY E.EMP_NO DESC) AS ROW_NUM, D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS
+		SELECT T.ROW_NUM, T.DEPT_NAME, T.JOB_NAME, T.EMP_NO, T.NAME, T.ATT_START, T.ATT_END, T.ATT_STATUS , T.ATT_NO
+		    FROM (SELECT ROW_NUMBER() OVER(ORDER BY E.EMP_NO DESC) AS ROW_NUM, D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS , A.ATT_NO 
 		            FROM DEPARTMENTS D
 		            INNER JOIN EMPLOYEES E
 		                ON D.DEPT_NO = E.DEPT_NO
 		            INNER JOIN POSITION P
 		                ON P.JOB_NO = E.JOB_NO
 		            INNER JOIN ATTENDANCE A
-		                ON A.EMP_NO = E.EMP_NO) A
-		    WHERE A.ROW_NUM BETWEEN #{begin} AND #{end}
+		                ON A.EMP_NO = E.EMP_NO) T
+		    WHERE T.ROW_NUM BETWEEN #{begin} AND #{end}
 	</select>
 	
 	<!-- <select id="selectAttendaceListByMap" parameterType="map" resultType="MemberDTO">
@@ -77,6 +77,38 @@
     		SET ATT_END = #{attEnd}
     		WHERE EMP_NO = #{empNo} AND ATT_START LIKE #{attStart} || '%'
 	</update>
+	
+	<select id="selectAttendacneByNo" parameterType="int" resultMap="AttMap">
+		SELECT T.ROW_NUM, T.DEPT_NAME, T.JOB_NAME, T.EMP_NO, T.NAME, T.ATT_START, T.ATT_END, T.ATT_STATUS , T.ATT_NO
+		    FROM (SELECT ROW_NUMBER() OVER(ORDER BY E.EMP_NO DESC) AS ROW_NUM, D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS , A.ATT_NO 
+		            FROM DEPARTMENTS D
+		            INNER JOIN EMPLOYEES E
+		                ON D.DEPT_NO = E.DEPT_NO
+		            INNER JOIN POSITION P
+		                ON P.JOB_NO = E.JOB_NO
+		            INNER JOIN ATTENDANCE A
+		                ON A.EMP_NO = E.EMP_NO) T
+         WHERE ATT_NO = #{attNo}
+	</select> 
+	
+	<update id="updateAttendacne" parameterType="Map">
+		UPDATE ATTENDANCE
+		   SET ATT_START = #{attStart}
+		     , ATT_END = #{attEnd}
+		     , ATT_STATUS = #{attStatus}
+		 WHERE ATT_NO = #{attNo}
+	</update>
+	
+	<delete id="deleteAttendacneList" parameterType="List">
+		DELETE
+		  FROM ATTENDANCE
+		<where>
+			ATT_NO IN
+			<foreach collection="list" item="attNo" open="(" close=")" separator=",">
+				#{attNo}
+			</foreach>
+		</where>
+	</delete>
 	
 	
 		

@@ -22,7 +22,6 @@
 	});
 	function fn_write() {
 		$('#btn_write').click(function() {
-			alert('버튼입력');
 			let schedule = JSON.stringify({
 				'scheduleTitle' : $('#title').val(),
 				'scheduleStart' : $('#start').val(),

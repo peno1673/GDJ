@@ -13,7 +13,11 @@ public interface AttendanceMapper {
 	public int insertAttendacne(AttendanceDTO attendacne);
 	public int updateLeaveWork(AttendanceDTO attendacne);
 	public AttendanceDTO selectAttendanceCheck(AttendanceDTO attendacne);
+	public AttendanceDTO selectAttendacneByNo(int memberNo);
+	public int updateAttendacne(Map<String, Object> map);
 	
 	public List<AttendanceDTO> selectAttendanceListByMap(Map<String, Object> map);
 	public int selectAttendaceCount();
+	
+	public int deleteAttendacneList(List<String> attendanceNoList);
 }
