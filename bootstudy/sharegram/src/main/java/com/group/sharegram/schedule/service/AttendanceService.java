@@ -11,7 +11,8 @@ public interface AttendanceService {
 	public ResponseEntity<Object> addAttendance(int attendance , int empNo);
 	
 	
-	public ResponseEntity<Object> getAttendanceList(int page); 
+	public ResponseEntity<Object> getAttendanceList(int page);
+	public void attendanceListCheck();
 	public ResponseEntity<Object> getAttendacneByNo(int attNo);
 	public ResponseEntity<Object> modifyAttendance (Map<String, Object> map);
 	public ResponseEntity<Object> removeAttendanceList (String attendacneNoList);

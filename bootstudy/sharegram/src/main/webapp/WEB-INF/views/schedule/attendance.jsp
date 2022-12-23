@@ -102,6 +102,7 @@ function fn_list(){
 		url: '${contextPath}/attendance' ,
 		dataType: 'json',
 		success: function(resData){
+			console.log(resData)
 			// 근태목록
 			$('#attendace_list').empty();
 			$.each(resData.attendanceList , function(i, list){
@@ -119,10 +120,11 @@ function fn_list(){
 					tr += '<td>' + list + '</td>'; 
 				})
 				
-				$.each(resData.working , function(K, list){
+				$.each(resData.overWorking , function(K, list){
 					if(i === K)
 					tr += '<td>' + list + '</td>';
 				}) 
+				tr += '<td>' + list.earlyStatus + '</td>'; 
 				tr += '<td><input type="button" value="조회" class="btn_detail" data-attendance_no="'+ list.attNo +'"></td>'; 
 				$('#attendace_list').append(tr);
 				
@@ -314,12 +316,13 @@ function fn_datepicker(){
 					<td>근무상태</td>
 					<td>근무시간</td>
 					<td>연장근무시간</td>
+					<td>조퇴 여부</td>
 				</tr>
 			</thead>
 			<tbody id="attendace_list"></tbody>
 			<tfoot>
 				<tr>
-					<td colspan="9">
+					<td colspan="11">
 						<div id="paging"></div>
 					</td>
 				</tr>

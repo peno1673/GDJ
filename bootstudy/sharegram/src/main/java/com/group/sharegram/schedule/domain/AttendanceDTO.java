@@ -1,7 +1,5 @@
 package com.group.sharegram.schedule.domain;
 
-import java.util.List;
-
 import com.group.sharegram.user.domain.EmployeesDTO;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +19,8 @@ public class AttendanceDTO {
 	private String attDate;    //근무일자
 	private String attDay;     //근무요일
 	private String attStatus;  //근무상태
+	private String earlyContent;  
+	private String earlyStatus;  
 	
 	private String working;
 	private String overWorking;

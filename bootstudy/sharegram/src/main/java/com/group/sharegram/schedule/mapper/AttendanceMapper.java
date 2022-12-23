@@ -17,6 +17,7 @@ public interface AttendanceMapper {
 	public int updateAttendacne(Map<String, Object> map);
 	
 	public List<AttendanceDTO> selectAttendanceListByMap(Map<String, Object> map);
+	public List<AttendanceDTO> selectAttendanceListCheck();
 	public int selectAttendaceCount();
 	
 	public int deleteAttendacneList(List<String> attendanceNoList);

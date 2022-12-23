@@ -336,13 +336,19 @@
 	         				dataType: 'json',
 	         				success: function(resData){
 	         					console.log(resData)
-	         					if(resData.updateLeaveWork > 0) {
+	         					if (resData.earlyLeave === 1 && resData.updateLeaveWork === 1 ) {
+	         						if(confirm('퇴근 시간 전입니다 조퇴 하시겠습니까?')){
+		         						alert('조퇴입니다');
+	         						}
+	         					}else if(resData.updateLeaveWork > 0) {
 	         						alert('퇴근하셧습니다.');
-	         					} else if (resData.notAttendance === 0){
+	         					}else if (resData.notAttendance === 0){
 	         						alert('출근을 눌러주세요');
-	         					} else if (resData.alreadyLeaveWork === 0){
+	         					}else if (resData.alreadyLeaveWork === 0){
 	         						alert('이미 퇴근을 누르셨습니다.');
 	         					} 
+	         					
+	         					
 	         					
 	         					
 	         					
