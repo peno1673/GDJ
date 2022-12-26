@@ -10,8 +10,10 @@
 <title>Insert title here</title>
 <link rel="stylesheet" href="${contextPath}/resources/css/jquery-ui.min.css">
 <link rel="stylesheet" href="${contextPath}/resources/css/datepicker.css">
+<link rel="stylesheet" href="${contextPath}/resources/css/jquery.datetimepicker.min.css">
 <script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
 <script src="${contextPath}/resources/js/jquery-ui.min.js"></script>
+<script src="${contextPath}/resources/js/jquery.datetimepicker.full.min.js"></script>
 <script src="${contextPath}/resources/js/moment-with-locales.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote-lite.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
@@ -27,10 +29,9 @@ $(function(){
 	fn_remove(); 
 	fn_modify();
 	fn_detail();
-	fn_datepicker()
-	/* fn_changePage();
-	fn_PageUtil();
-	*/
+	fn_datepicker();
+	fn_changePage();
+	
 });
 
 
@@ -113,7 +114,8 @@ function fn_list(){
 				tr += '<td>' + list.empDTO.depDTO.deptName + '</td>';
 				tr += '<td>' + list.empDTO.posDTO.jobName + '</td>';
 				tr += '<td>' + list.attStart + '</td>';
-				tr += '<td>' + list.attEnd + '</td>';
+				const end = list.attEnd ?? ''
+				tr += '<td>' + end + '</td>';
 				tr += '<td>' + list.attStatus + '</td>';
 				$.each(resData.working , function(j, list){
 					if(i === j)
@@ -122,11 +124,39 @@ function fn_list(){
 				
 				$.each(resData.overWorking , function(K, list){
 					if(i === K)
-					tr += '<td>' + list + '</td>';
-				}) 
-				tr += '<td>' + list.earlyStatus + '</td>'; 
+						tr += '<td>' + list + '</td>';
+					
+				})  
+				const status = list.earlyStatus ?? ''
+				tr += '<td>' + status + '</td>'; 
 				tr += '<td><input type="button" value="조회" class="btn_detail" data-attendance_no="'+ list.attNo +'"></td>'; 
 				$('#attendace_list').append(tr);
+				
+				// 페이징
+				$('#paging').empty();
+				
+				var PageUtil = resData.PageUtil;
+				var paging = '<div>';
+				// 이전 페이지
+				if(page != 1) {
+					paging += '<span class="lnk_enable" data-page="' + (page - 1) + '">&lt;이전</span>';
+				}
+				// 페이지번호
+				for(let p = PageUtil.beginPage; p <= PageUtil.endPage; p++) {
+					if(p == page){
+						paging += '<strong>' + p + '</strong>';
+					} else {
+						paging += '<span class="lnk_enable" data-page="'+ p +'">' + p + '</span>';
+					}
+				}
+				// 다음 페이지
+				if(page != PageUtil.totalPage){
+					paging += '<span class="lnk_enable" data-page="'+ (page + 1) +'">다음&gt;</span>';
+				}
+				paging += '</div>';
+				// 페이징 표시
+				$('#paging').append(paging);
+				
 				
 			});
 			
@@ -136,27 +166,35 @@ function fn_list(){
 	});
 }
 
+function fn_changePage(){
+	$(document).on('click', '.lnk_enable', function(){
+		page = $(this).data('page');
+		fn_list();
+	});
+}
+
 function fn_modify(){
 	$('#btn_modify').click(function(){
-		let attendance = JSON.stringify({
-			attStart : $('#attStart').val(attendance.attStart),
-			attEnd : $('#attEnd').val(attendance.attEnd),
-		    attStatus : $('#attStatus').val(attendance.attStatus),
+		let attendances = JSON.stringify({
+			attStart : $('#attStart').val(),
+			attEnd : $('#attEnd').val(),
+		    attStatus : $('#attStatus').val(),
+		    attNo : $('#attNo').val(),
 		});
 		$.ajax({
 			type: 'put',
 			url: '${contextPath}/attendance',
-			data: attendance,
+			data: attendances,
 			contentType: 'application/json',
 			dataType: 'json',
 			success: function(resData){
 				console.log(resData)
-				/* if(resData.updateResult > 0){
+				if(resData.updateResult > 0){
 					alert('회원 정보가 수정되었습니다.');
 					fn_list();
 				} else {
 					alert('회원 정보가 수정되지 않았습니다.');
-				} */
+				} 
 			},
 			error: function(jqXHR){
 				alert('에러코드(' + jqXHR.status + ') ' + jqXHR.responseText);
@@ -166,12 +204,7 @@ function fn_modify(){
 }
 
 
-function fn_changePage(){
-	$(document).on('click', '.lnk_enable', function(){
-		page = $(this).data('page');
-		fn_list();
-	});
-}
+
 
 function fn_detail(){
 	$(document).on('click', '.btn_detail', function(){
@@ -185,12 +218,14 @@ function fn_detail(){
 				if(attendance == null){
 					alert('해당 회원을 찾을 수 없습니다.');
 				} else {
+					console.log('----')
 					console.log(attendance);
 					$('#empNo').val(attendance.empDTO.empNo);
 					$('#name').val(attendance.empDTO.name);
 					$('#attStart').val(attendance.attStart);
 					$('#attEnd').val(attendance.attEnd);
 					$('#attStatus').val(attendance.attStatus);
+					$('#attNo').val(attendance.attNo);
 				} 
 			}
 		});
@@ -225,31 +260,29 @@ function fn_remove(){
 		}
 	});
 }
-
 function fn_datepicker(){
-	$('#attStart').datepicker({
-		dateFormat: 'yyyy년 MM월 dd일 HH시 mm분',  // 실제로는 yyyymmdd로 적용
-			prevText: '이전 달',
-			  nextText: '다음 달',
-			  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-			  showMonthAfterYear: true,
-			  yearSuffix: '년'
+	$('#attStart').datetimepicker({
+		format: "Y년 m월 d일 H시 i분",
+		yearStart : '2000',
+		yearEnd : '2050',
+		locale: 'ko',
+		step: '30',
+		allowTimes : [ '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', 
+			'15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', 
+			'22:00', '22:30', '00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', 
+			'06:00', '06:30', '07:00', '07:30', '08:00', '08:30']  ,
 	});
-	$('#attEnd').datepicker({
-		dateFormat: 'yy년 MM월 dd일 HH시 mm분',  // 실제로는 yyyymmdd로 적용
-			prevText: '이전 달',
-			  nextText: '다음 달',
-			  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-			  showMonthAfterYear: true,
-			  yearSuffix: '년'
+	
+	$('#attEnd').datetimepicker({
+		format: "Y년 m월 d일 H시 i분",
+		yearStart : '2000',
+		yearEnd : '2050',
+		locale: 'ko',
+		step: '30',
+		allowTimes : [ '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', 
+			'15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', 
+			'22:00', '22:30', '00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', 
+			'06:00', '06:30', '07:00', '07:30', '08:00', '08:30']  
 	});
 }
 
@@ -262,10 +295,10 @@ function fn_datepicker(){
 	
 	<h1>근태 페이지</h1>
 	<div>
-		<input type="hidden" id="attNo">
+		<input type="hidden" id="attNo" >
 		<div>
 			<label for="empNo">
-				아이디 <input type="text" id="empNo" readonly>
+				사원번호 <input type="text" id="empNo" readonly>
 			</label>
 		</div>
 		<div>
@@ -289,12 +322,19 @@ function fn_datepicker(){
 					<option value="">선택</option>
 					<option value="정상 출근">정상 출근</option>
 					<option value="지각">지각</option>
-					<option value="결근">결근</option>
+					<!-- <option value="결근">결근</option>
+					<option value="조퇴">조퇴</option> -->
+				</select>
+			</label>
+		</div>
+		<!-- <div>
+			<label for="earlyStatus">
+				조퇴여부 <select id="earlyStatus">
+					<option value="">x</option>
 					<option value="조퇴">조퇴</option>
 				</select>
 			</label>
-					
-		</div>
+		</div> -->
 	</div>
 	<div>
 		<input type="button" value="초기화" onclick="fn_init()">

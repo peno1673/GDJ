@@ -29,7 +29,7 @@ public class AttendanceController {
 		return attendanceService.addAttendance(attendance , empNo);
 	}
 	
-	@PutMapping(value="/members", produces="application/json")
+	@PutMapping(value="/attendance", produces="application/json")
 	public ResponseEntity<Object> modifyMember(@RequestBody Map<String, Object> map) {
 		return attendanceService.modifyAttendance(map);
 	}

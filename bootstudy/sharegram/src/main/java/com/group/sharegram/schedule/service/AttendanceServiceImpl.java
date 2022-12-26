@@ -7,9 +7,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -94,15 +96,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 			AttendanceDTO attendanceDTO = AttendanceDTO.builder().empNo(1).attStart(attCheck.get("attStart"))
 					.attEnd(attEnd).earlyContent("").earlyStatus("").build();
-			System.out.println(attendanceDTO);
-			System.out.println("동작");
 			Map<String, Object> result = new HashMap<String, Object>();
 			int updateLeaveWork = attendanceMapper.updateLeaveWork(attendanceDTO);
 			result.put("updateLeaveWork", updateLeaveWork);
 
 			if (status.isBefore(regular)) { // 조퇴
 				attendanceDTO.setEarlyStatus("조퇴");
-//				System.out.println(attendanceDTO);
 				result.put("earlyLeave", attendanceMapper.updateLeaveWork(attendanceDTO));
 				return new ResponseEntity<Object>(result, HttpStatus.OK);
 			} else {
@@ -143,11 +142,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("begin", pageUtil.getBegin());
-		map.put("end", 10);
+		map.put("end", pageUtil.getEnd());
 
-		List<AttendanceDTO> attendances = attendanceMapper.selectAttendanceListByMap(map);
-//		attendances.stream().forEach(System.out::println);
-
+		List<AttendanceDTO> attendances = attendanceMapper.selectAttendanceListByMap(map).stream()
+				.sorted(Comparator.comparing(AttendanceDTO::getAttStart).reversed()).collect(Collectors.toList());
+		
+		
 		List<LocalDateTime> startTime = attendances.stream().filter(a -> a.getAttEnd() != null)
 				.map(AttendanceDTO::getAttStart)
 				.map(AttStart -> LocalDateTime.parse(AttStart, DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분")))
@@ -164,65 +164,95 @@ public class AttendanceServiceImpl implements AttendanceService {
 			overWorking.add("퇴근 후 정산");
 		}
 
-		List<String> status = attendances.stream().map(AttendanceDTO::getAttStatus).collect(Collectors.toList());
-
-//		List<String> early = null; 
-//		attendances.stream().map(AttendanceDTO::getEarlyStatus).forEach(System.out::println); 
-
-		List<String> early = attendances.stream().map(AttendanceDTO::getEarlyStatus)
+		List<String> status = attendances.stream().filter(a -> a.getAttEnd() != null).map(AttendanceDTO::getAttStatus)
+				.collect(Collectors.toList());
+		List<String> early = attendances.stream().filter(a -> a.getAttEnd() != null).map(AttendanceDTO::getEarlyStatus)
 				.map(nullCheck -> nullCheck == null ? "" : nullCheck).collect(Collectors.toList());
 
+		
 		LocalTime startRegular = LocalTime.parse("09:00:00");
 		LocalTime endRegular = LocalTime.parse("18:00:00");
 		Long totalMinutes = null;
 		Long hour = null;
 		Long minute = null;
+
+
 		for (int i = 0; i < endTime.size(); i++) {
 
 			if (status.get(i).equals("정상 출근") && early.get(i).equals("")) {
 				totalMinutes = Duration.between(startRegular, endRegular).toMinutes();
-				working.add("8시 " + "00분");
+				if (totalMinutes > 480) {
+					hour = (totalMinutes - 60) / 60;
+					minute = totalMinutes % 60;
+				} else if (totalMinutes > 480) {
+					hour = (totalMinutes - 30) / 60;
+					minute = totalMinutes % 60;
+				}
+				working.add(Long.toString(hour) + "시 " + Long.toString(minute) + "분");
+
 			} else if (status.get(i).equals("정상 출근") && early.get(i).equals("조퇴")) {
 				totalMinutes = Duration.between(startRegular, endTime.get(i).toLocalTime()).toMinutes();
-				
-				
-				
-				
+				if (totalMinutes > 480) {
+					hour = (totalMinutes - 60) / 60;
+					minute = totalMinutes % 60;
+				} else if (totalMinutes > 480) {
+					hour = (totalMinutes - 30) / 60;
+					minute = totalMinutes % 60;
+				}
+				working.add(Long.toString(hour) + "시 " + Long.toString(minute) + "분");
+
 			} else if (status.get(i).equals("지각") && early.get(i).equals("")) {
 				totalMinutes = Duration.between(startTime.get(i).toLocalTime(), endRegular).toMinutes();
-				LongStream longStream = LongStream.of(totalMinutes);
-				
-				longStream.map() ;
-				
+
+				if (totalMinutes > 480) {
+					hour = (totalMinutes - 60) / 60;
+					minute = totalMinutes % 60;
+				} else if (totalMinutes > 240) {
+					hour = (totalMinutes - 30) / 60;
+					minute = totalMinutes % 60;
+				}
+				working.add(Long.toString(hour) + "시 " + Long.toString(minute) + "분");
+
 			} else if (status.get(i).equals("지각") && early.get(i).equals("조퇴")) {
 				totalMinutes = Duration.between(startTime.get(i).toLocalTime(), endTime.get(i).toLocalTime())
 						.toMinutes();
 
+				if (totalMinutes > 480) {
+					hour = (totalMinutes - 60) / 60;
+					minute = totalMinutes % 60;
+				} else if (totalMinutes > 480) {
+					hour = (totalMinutes - 30) / 60;
+					minute = totalMinutes % 60;
+				}
+
+				working.add(Long.toString(hour) + "시 " + Long.toString(minute) + "분");
+
 			}
-
-//			long totalMinute = workTime.toMinutes();
-//			long hour = 0;
-//			long minute = 0;
-//			if (totalMinute > 240) {
-//				hour = (totalMinute - 30) / 60; //휴게 시간 빼기
-//				minute = totalMinute % 60;
-//
-//			} else if (totalMinute > 480) {
-//				hour = (totalMinute - 60) / 60; //휴게 시간 빼기
-//				minute = totalMinute % 60;
-//			}
-//			working.add(Long.toString(hour) + "시 " + Long.toString(minute) + "분");
-
-//			if (totalMinute > 480) {
-//				long totalOverWork = totalMinute - 540;
-//				System.out.println("total");
-//				System.out.println(totalOverWork);
-//				long OverWorkhour = totalOverWork / 60;
-//				long OverWorkminute = totalOverWork % 60;
-//				overWorking.add(Long.toString(OverWorkhour) + "시 " + Long.toString(OverWorkminute) + "분");
-//			} else {
-//				overWorking.add("0분");
-//			}
+		}
+		
+		long totalOverWork = 0;
+		for (int j = 0; j < endTime.size(); j++) {
+			if (status.get(j).equals("정상 출근") && early.get(j).equals("")) {
+				totalOverWork = Duration.between(endRegular, endTime.get(j).toLocalTime()).toMinutes();
+				if (totalOverWork > 10) {
+					long OverWorkhour = totalOverWork / 60;
+					long OverWorkminute = totalOverWork % 60;
+					overWorking.add(Long.toString(OverWorkhour) + "시 " + Long.toString(OverWorkminute) + "분");
+				} else {
+					overWorking.add("0분");
+				}
+			} else if (status.get(j).equals("지각") && early.get(j).equals("")) {
+				totalOverWork = Duration.between(endRegular, endTime.get(j).toLocalTime()).toMinutes();
+				if (totalOverWork > 10) {
+					long OverWorkhour = totalOverWork / 60;
+					long OverWorkminute = totalOverWork % 60;
+					overWorking.add(Long.toString(OverWorkhour) + "시 " + Long.toString(OverWorkminute) + "분");
+				} else {
+					overWorking.add("0분");
+				}
+			} else {
+				overWorking.add("0분");
+			}
 
 		}
 
@@ -234,7 +264,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		return new ResponseEntity<Object>(result, HttpStatus.OK);
 	}
-	
+
 //	public Map<String, Long> workingCalculator(long totalMinutes) {
 //		long hour ;
 //		long minute ;
@@ -251,7 +281,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 //		
 //		return result;
 //	}
-	
 
 	@Override
 	public void attendanceListCheck() {
@@ -278,6 +307,15 @@ public class AttendanceServiceImpl implements AttendanceService {
 	public ResponseEntity<Object> modifyAttendance(Map<String, Object> map) {
 
 		Map<String, Object> result = new HashMap<String, Object>();
+		LocalTime attEnd = LocalDateTime.parse((CharSequence) map.get("attEnd"), DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분")).toLocalTime();
+		LocalTime regular = LocalTime.parse("17:50:00");
+		if (attEnd.isBefore(regular) ) {
+			map.put("earlyStatus", "조퇴");
+		} else {
+			map.put("earlyStatus", "");
+		}
+		
+		
 		result.put("updateResult", attendanceMapper.updateAttendacne(map));
 		return new ResponseEntity<Object>(result, HttpStatus.OK);
 

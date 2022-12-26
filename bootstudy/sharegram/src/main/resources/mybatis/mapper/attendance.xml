@@ -82,7 +82,7 @@
 	
 	<select id="selectAttendacneByNo" parameterType="int" resultMap="AttMap">
 		SELECT T.ROW_NUM, T.DEPT_NAME, T.JOB_NAME, T.EMP_NO, T.NAME, T.ATT_START, T.ATT_END, T.ATT_STATUS , T.ATT_NO , T.EARLY_CONTENT , T.EARLY_STATUS
-		    FROM (SELECT ROW_NUMBER() OVER(ORDER BY E.EMP_NO DESC) AS ROW_NUM, D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS , A.ATT_NO , A.EARLY_CONTENT , A.EARLY_STATUS
+		    FROM (SELECT ROW_NUMBER() OVER(ORDER BY A.ATT_START ASC) AS ROW_NUM, D.DEPT_NAME, P.JOB_NAME, E.EMP_NO, E.NAME, A.ATT_START, A.ATT_END, A.ATT_STATUS , A.ATT_NO , A.EARLY_CONTENT , A.EARLY_STATUS
 		            FROM DEPARTMENTS D
 		            INNER JOIN EMPLOYEES E
 		                ON D.DEPT_NO = E.DEPT_NO
@@ -93,11 +93,12 @@
          WHERE ATT_NO = #{attNo}
 	</select> 
 	
-	<update id="updateAttendacne" parameterType="Map">
+	<update id="updateAttendacne" parameterType="map">
 		UPDATE ATTENDANCE
 		   SET ATT_START = #{attStart}
 		     , ATT_END = #{attEnd}
 		     , ATT_STATUS = #{attStatus}
+		     , EARLY_STATUS = #{earlyStatus}
 		 WHERE ATT_NO = #{attNo}
 	</update>
 	
