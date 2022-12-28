@@ -41,28 +41,6 @@ public class NaverPageUtil {
 			totalPage++;
 		}
 		
-		/*
-			recordPerPage=10
-			pagePerBlock=10
-			totalPage = 83
-			
-			beginPage=1 endPage=10 page=1
-			beginPage=1 endPage=10 page=2
-			beginPage=1 endPage=10 page=3
-			beginPage=1 endPage=10 page=4
-			beginPage=1 endPage=10 page=5
-			beginPage=1 endPage=10 page=6
-			beginPage=2 endPage=11 page=7
-			beginPage=3 endPage=12 page=8
-			...
-			beginPage=73 endPage=82 page=78
-			beginPage=74 endPage=83 page=79
-			beginPage=74 endPage=83 page=80
-			beginPage=74 endPage=83 page=81
-			beginPage=74 endPage=83 page=82
-			beginPage=74 endPage=83 page=83
-		*/
-		
 		// beginPage, endPage 계산
 		if (page <= (pagePerBlock / 2) + 1) {
 			beginPage = 1;

@@ -23,14 +23,14 @@
 $(function(){
 	fn_checkAll();
 	fn_checkOne();
-	fn_add();
+	fn_changePage();
+	/* fn_add(); */
 	fn_init(); 
 	fn_list();
 	fn_remove(); 
 	fn_modify();
 	fn_detail();
 	fn_datepicker();
-	fn_changePage();
 	
 });
 
@@ -139,19 +139,19 @@ function fn_list(){
 				var paging = '<div>';
 				// 이전 페이지
 				if(page != 1) {
-					paging += '<span class="lnk_enable" data-page="' + (page - 1) + '">&lt;이전</span>';
+					paging += '<span class="lnk" data-page="' + (page - 1) + '">&lt;이전</span>';
 				}
 				// 페이지번호
 				for(let p = PageUtil.beginPage; p <= PageUtil.endPage; p++) {
 					if(p == page){
 						paging += '<strong>' + p + '</strong>';
 					} else {
-						paging += '<span class="lnk_enable" data-page="'+ p +'">' + p + '</span>';
+						paging += '<span class="lnk" data-page="'+ p +'">' + p + '</span>';
 					}
 				}
 				// 다음 페이지
 				if(page != PageUtil.totalPage){
-					paging += '<span class="lnk_enable" data-page="'+ (page + 1) +'">다음&gt;</span>';
+					paging += '<span class="lnk" data-page="'+ (page + 1) +'">다음&gt;</span>';
 				}
 				paging += '</div>';
 				// 페이징 표시
@@ -167,8 +167,10 @@ function fn_list(){
 }
 
 function fn_changePage(){
-	$(document).on('click', '.lnk_enable', function(){
+	$(document).on("click", ".lnk", function(e){
 		page = $(this).data('page');
+		alert(lnk_enable);
+		alert(e.target);
 		fn_list();
 	});
 }
